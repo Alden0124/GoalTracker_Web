@@ -5,3 +5,16 @@
 * {
   font-family: "Noto Sans TC", sans-serif;
 }
+
+@layer base {
+  body {
+    @apply bg-white text-black dark:bg-black dark:text-white;
+  }
+
+  * {
+    @apply border-gray-200 dark:border-gray-700;
+    transition-property: background-color, border-color;
+    transition-duration: 200ms;
+    transition-timing-function: ease-in-out;
+  }
+}
