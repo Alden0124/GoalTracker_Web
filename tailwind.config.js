@@ -8,20 +8,28 @@ export default {
       },
       colors: {
         background: {
-          light: '#ffffff',
-          dark: '#09090b',
+          light: "#ffffff",
+          dark: "#23272F",
         },
         foreground: {
-          light: '#09090b',
-          dark: '#ffffff',
+          light: "#23272F",
+          dark: "#ffffff",
+          lightBlue: "#276DF4",
+          darkBlue: "#1f2937",
+          darkHover: '#2D3A4F4D',
         },
         border: {
-          light: '#e5e7eb',
-          dark: '#27272a',
+          light: "#e5e7eb",
+          dark: "#27272a",
+        },
+        button: {
+          light: "#276DF4",
+          dark: "transparent",
+          darkHover: '#2D3A4F4D',
         },
       },
     },
   },
   plugins: [],
-  darkMode: 'class',
+  darkMode: "class",
 };

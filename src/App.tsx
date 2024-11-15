@@ -1,5 +1,7 @@
-import { ThemeProvider } from "@/context/ThemeContext";
+import { ThemeProvider } from "@/provider/ThemeProvider";
 import Routes from "./router";
+// style
+import "@/assets/style/common.css";
 
 function App() {
   return (

@@ -1,7 +1,10 @@
-import { useTranslation } from "react-i18next";
+// icon
 import { AiOutlineGlobal } from "react-icons/ai";
 import { CiDark } from "react-icons/ci";
 import { IoSunnyOutline } from "react-icons/io5";
+// i18n
+import { useTranslation } from "react-i18next";
+// 自訂一hook
 import { useTheme } from "@/hooks/useTheme";
 
 const Header = () => {
@@ -20,7 +23,7 @@ const Header = () => {
   return (
     <header
       className={`
-        py-[12px] px-[16px] 
+        py-[8px] px-[15px] md:px-[30px] 
         sticky top-0 
         flex justify-between items-center 
         border-b 
@@ -29,21 +32,21 @@ const Header = () => {
         text-foreground-light dark:text-foreground-dark
       `}
     >
-      <p className="text-[18px]">{t("goalTracker")}</p>
-      <div className="flex items-center gap-[16px] text-[16px]">
-        <button 
+      <p className="text-[18px]">GoalTracker</p>
+      <div className="flex items-center text-[16px] gap-[10px]">
+        <button
           onClick={toggleLanguage}
-          className="hover:opacity-80"
+          className="flex w-12 h-12 rounded-full items-center justify-center hover:opacity-80 dark:hover:bg-foreground-darkHover"
         >
           <AiOutlineGlobal />
         </button>
-        <button 
+        <button
           onClick={toggleTheme}
-          className="hover:opacity-80"
+          className=" flex md:w-12 md:h-12 rounded-full items-center justify-center hover:opacity-80 dark:hover:bg-foreground-darkHover"
         >
           {theme === "dark" ? <IoSunnyOutline /> : <CiDark />}
         </button>
-        <div>{t("login")}</div>
+        <button className={`btn-primary ml-[15px]`}>{t("login")}</button>
       </div>
     </header>
   );

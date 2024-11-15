@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Suspense, lazy } from "react";
 
 const DefaultLayout = lazy(() => import("@/layout/DefaultLayout"));
+const Home = lazy(() => import("@/components/Home"));
 
 const routes = [
   {
@@ -11,6 +12,16 @@ const routes = [
         <DefaultLayout />
       </Suspense>
     ),
+    children: [
+      {
+        path: "/home",
+        element: (
+          <Suspense fallback={<div className="h-screen"></div>}>
+            <Home />
+          </Suspense>
+        ),
+      },
+    ],
   },
 ];
 
