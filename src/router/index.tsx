@@ -2,7 +2,10 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Suspense, lazy } from "react";
 
 const DefaultLayout = lazy(() => import("@/layout/DefaultLayout"));
-const Home = lazy(() => import("@/components/Home"));
+const Home = lazy(() => import("@/pages/Home"));
+const SignIn = lazy(() => import("@/pages/Auth/SignIn"));
+const SignUp = lazy(() => import("@/pages/Auth/SignUp"));
+const Forget = lazy(() => import("@/pages/Auth/Forget"));
 
 const routes = [
   {
@@ -18,6 +21,30 @@ const routes = [
         element: (
           <Suspense fallback={<div className="h-screen"></div>}>
             <Home />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/signIn",
+        element: (
+          <Suspense fallback={<div className="h-screen"></div>}>
+            <SignIn />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/signUp",
+        element: (
+          <Suspense fallback={<div className="h-screen"></div>}>
+            <SignUp />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/forget",
+        element: (
+          <Suspense fallback={<div className="h-screen"></div>}>
+            <Forget />
           </Suspense>
         ),
       },

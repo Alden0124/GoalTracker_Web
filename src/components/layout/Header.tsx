@@ -6,6 +6,7 @@ import { IoSunnyOutline } from "react-icons/io5";
 import { useTranslation } from "react-i18next";
 // 自訂一hook
 import { useTheme } from "@/hooks/useTheme";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const { t, i18n } = useTranslation();
@@ -23,6 +24,7 @@ const Header = () => {
   return (
     <header
       className={`
+        h-[64px]
         py-[8px] px-[15px] md:px-[30px] 
         sticky top-0 
         flex justify-between items-center 
@@ -46,7 +48,9 @@ const Header = () => {
         >
           {theme === "dark" ? <IoSunnyOutline /> : <CiDark />}
         </button>
-        <button className={`btn-primary ml-[15px]`}>{t("login")}</button>
+        <Link to={"/signIn"} className={`btn-primary ml-[15px]`}>
+          {t("login")}
+        </Link>
       </div>
     </header>
   );

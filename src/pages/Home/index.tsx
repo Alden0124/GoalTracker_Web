@@ -33,24 +33,6 @@ const Home = () => {
           目標設定方法，幫你制定清晰、可行的目標。為每個目標設定里程碑，追蹤進度。
         </p>
       </section>
-
-      {/* 第三部分 */}
-      <section className="w-full bg-gray-50 py-20 min-h-[850px] flex items-center">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">追蹤進度</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              可視化工作進展，掌握目標進度，並即時調整策略。使用簡單易懂的完成率圖表，讓你一目了然地了解進度分析。
-            </p>
-          </div>
-          <div className="flex flex-col md:flex-row items-center gap-12">
-            <div className="md:w-1/2"></div>
-            <div className="md:w-1/2">
-           
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 };

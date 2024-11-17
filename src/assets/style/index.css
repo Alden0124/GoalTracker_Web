@@ -7,10 +7,6 @@
 }
 
 @layer base {
-  body {
-    @apply bg-white text-black dark:bg-background-dark dark:text-white;
-  }
-
   * {
     @apply border-gray-200 dark:border-gray-700;
     transition-property: background-color, border-color;

@@ -20,7 +20,7 @@ export default {
         },
         border: {
           light: "#e5e7eb",
-          dark: "#27272a",
+          dark: "#e5e7eb",
         },
         button: {
           light: "#276DF4",
