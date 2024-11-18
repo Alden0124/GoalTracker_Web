@@ -1,10 +1,20 @@
+import { Link } from "react-router-dom";
+// 欄位驗證
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Input from "@/components/ui/Input";
 import { signUpSchema, type SignUpFormData } from "@/schemas/auth.schema";
-import { Link } from "react-router-dom";
+// 組件
+import Input from "@/components/ui/Input";
+// 自定義hook
+import { useAuth } from "@/hooks/useAuth";
+// 提示窗
+import { notification } from "@/utils/notification";
+// api
+import { FETCH_AUTH } from "@/services/api/auth";
 
 const SignUp = () => {
+  const { handleSendVerificationCode } = useAuth();
+
   const {
     register,
     handleSubmit,
@@ -14,14 +24,37 @@ const SignUp = () => {
     mode: "onSubmit",
   });
 
-  const onSubmit = (data: SignUpFormData) => {
-    console.log(data);
-    // 處理登入邏輯
+  const handleSignUp = async (data: SignUpFormData) => {
+    try {
+      const result = await FETCH_AUTH.SignUp({
+        email: data.email,
+        password: data.password,
+      });
+      if (result) {
+        notification.success({
+          title: "註冊成功",
+          text: '請至信箱收取驗整碼，即將導向驗證頁面',
+        });
+        await handleSendVerificationCode(data.email);
+      }
+    } catch (error: any) {
+      const { errorMessage } = error;
+      notification.error({
+        title: "註冊失敗",
+        text: errorMessage,
+      });
+    }
   };
 
-  const onError = (errors: any) => {
-    console.log("表單錯誤:", errors);
-    // 錯誤會自動顯示在對應的 Input 元件下方
+  const onSubmit = (data: SignUpFormData) => {
+    handleSignUp(data);
+  };
+
+  const onError = () => {
+    notification.warning({
+      title: "表單驗證失敗",
+      text: "請檢查輸入的資料是否正確",
+    });
   };
 
   return (
@@ -29,7 +62,6 @@ const SignUp = () => {
       <h1 className="text-center  text-2xl dark:text-foreground-dark">
         註冊 GoalTracker
       </h1>
-   
 
       <form
         onSubmit={handleSubmit(onSubmit, onError)}

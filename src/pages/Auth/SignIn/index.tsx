@@ -1,12 +1,23 @@
+import { Link } from "react-router-dom";
+// 欄位驗證
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Input from "@/components/ui/Input";
 import { signInSchema, type SignInFormData } from "@/schemas/auth.schema";
-import { Link } from "react-router-dom";
+// 組件
+import Input from "@/components/ui/Input";
+// icon
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook, FaLine } from "react-icons/fa";
+// api
+import { FETCH_AUTH } from "@/services/api/auth";
+// alert
+import { notification } from "@/utils/notification";
+// 自定義hook
+import { useAuth } from "@/hooks/useAuth";
 
 const SignIn = () => {
+  const { handleSendVerificationCode } = useAuth();
+
   const {
     register,
     handleSubmit,
@@ -16,9 +27,31 @@ const SignIn = () => {
     mode: "onSubmit",
   });
 
+  const handleSignIn = async (data: SignInFormData) => {
+    try {
+      await FETCH_AUTH.SingIn(data);
+      notification.success({
+        title: "登入成功",
+      });
+    } catch (err: any) {
+      const { errorMessage, respData } = err;
+      if (respData?.needVerification) {
+        notification.error({
+          title: "登入失敗",
+          text: `${errorMessage}，請至信箱收取驗整碼，即將導向驗證頁面`,
+        });
+        await handleSendVerificationCode(data.email);
+      } else {
+        notification.error({
+          title: "登入失敗",
+          text: errorMessage,
+        });
+      }
+    }
+  };
+
   const onSubmit = (data: SignInFormData) => {
-    console.log(data);
-    // 處理登入邏輯
+    handleSignIn(data);
   };
 
   const onError = (errors: any) => {
@@ -87,9 +120,9 @@ const SignIn = () => {
           type="button"
           className="w-full border text-center text-[16px] rounded-[5px] hover:bg-[gray]/10 dark:text-foreground-dark dark:border-gray-600 p-[6px] flex items-center justify-center gap-2"
         >
-          <FaFacebook 
-            size={24} 
-            className="text-[#1877F2] dark:text-[#4267B2]" 
+          <FaFacebook
+            size={24}
+            className="text-[#1877F2] dark:text-[#4267B2]"
           />
           使用 Facebook 登入
         </button>
@@ -97,10 +130,7 @@ const SignIn = () => {
           type="button"
           className="w-full border text-center text-[16px] rounded-[5px] hover:bg-[gray]/10 dark:text-foreground-dark dark:border-gray-600 p-[6px] flex items-center justify-center gap-2"
         >
-          <FaLine 
-            size={24} 
-            className="text-[#06C755] dark:text-[#00B900]" 
-          />
+          <FaLine size={24} className="text-[#06C755] dark:text-[#00B900]" />
           使用 LINE 登入
         </button>
 

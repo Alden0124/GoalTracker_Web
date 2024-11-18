@@ -5,7 +5,10 @@ const DefaultLayout = lazy(() => import("@/layout/DefaultLayout"));
 const Home = lazy(() => import("@/pages/Home"));
 const SignIn = lazy(() => import("@/pages/Auth/SignIn"));
 const SignUp = lazy(() => import("@/pages/Auth/SignUp"));
-const Forget = lazy(() => import("@/pages/Auth/Forget"));
+const Forget = lazy(() => import("@/pages/Auth/ForgetPassword"));
+const SendCode = lazy(() => import("@/pages/Auth/SendCode"));
+const VerifyCode = lazy(() => import("@/pages/Auth/VerifyCode"));
+const ResetPassword = lazy(() => import("@/pages/Auth/ResetPassword"));
 
 const routes = [
   {
@@ -48,6 +51,31 @@ const routes = [
           </Suspense>
         ),
       },
+      {
+        path: "/sendCode",
+        element: (
+          <Suspense fallback={<div className="h-screen"></div>}>
+            <SendCode />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/verifyCode",
+        element: (
+          <Suspense fallback={<div className="h-screen"></div>}>
+            <VerifyCode />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/resetPassword",
+        element: (
+          <Suspense fallback={<div className="h-screen"></div>}>
+            <ResetPassword />
+          </Suspense>
+        ),
+      },
+      ResetPassword,
     ],
   },
 ];

@@ -10,12 +10,9 @@
 
   /* 次要按鈕 */
   .btn-secondary {
-    @apply px-4 py-2 rounded-lg
-    border border-button-light dark:border-button-dark
-    text-button-light dark:text-button-dark
-    hover:bg-button-light/10 dark:hover:bg-button-dark/10
-    transform hover:scale-105
-    transition-all duration-300;
+    @apply py-[6px] text-center w-[80px] md:w-[140px] rounded-[5px] border border-button-light dark:border-[#374151]
+    text-button-light dark:text-[#fff]
+    hover:bg-button-light/10 dark:hover:bg-button-darkHover/30;
   }
 
   /* 文字按鈕 */

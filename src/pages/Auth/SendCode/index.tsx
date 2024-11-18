@@ -1,11 +1,12 @@
+// 欄位驗證
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import Input from "@/components/ui/Input";
 import { forgetSchema, type ForgetFormData } from "@/schemas/auth.schema";
-import { Link } from "react-router-dom";
-import { FaArrowLeft } from "react-icons/fa";
 
-const Forget = () => {
+// 組件
+import Input from "@/components/ui/Input";
+
+const SendCode = () => {
   const {
     register,
     handleSubmit,
@@ -28,7 +29,7 @@ const Forget = () => {
   return (
     <main className="w-full min-h-[calc(100vh-64px)] flex flex-col justify-center items-center dark:bg-background-dark">
       <h1 className="text-center  text-2xl dark:text-foreground-dark">
-        忘記密碼
+        寄送驗證碼
       </h1>
 
       <form
@@ -47,34 +48,12 @@ const Forget = () => {
         />
 
         <button type="submit" className="btn-primary w-full hover:opacity-90">
-          寄送Email驗證碼
+          寄送驗證碼
         </button>
-
-        <div className={`w-full flex items-center justify-center`}>
-          <div className="border-b w-[50%]"></div>
-          <p
-            className={`text-sm break-keep text-foreground-light/50 dark:text-foreground-dark`}
-          >
-            或
-          </p>
-          <div className={`border-b w-[50%]`}></div>
-        </div>
-
-        <div>
-          <Link
-            to={"/signIn"}
-            className="group text-center text-foreground-light/50 dark:text-foreground-dark hover:text-gray-700 dark:hover:text-gray-300 flex items-center justify-center gap-2"
-          >
-            <FaArrowLeft
-              size={14}
-              className=" transition-transform duration-300 group-hover:-translate-x-2"
-            />
-            返回登入頁面
-          </Link>
-        </div>
+     
       </form>
     </main>
   );
 };
 
-export default Forget;
+export default SendCode;

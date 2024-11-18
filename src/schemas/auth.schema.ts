@@ -34,6 +34,15 @@ export const forgetSchema = z.object({
   email: formRules.email,
 });
 
+// 驗證碼表單驗證
+export const verifyCodeSchema = z.object({
+  code: z.string()
+    .min(1, "驗證碼為必填")
+    .length(6, "驗證碼必須為6位數字")
+    .regex(/^\d+$/, "驗證碼只能包含數字"),
+});
+
 export type SignInFormData = z.infer<typeof signInSchema>;
 export type SignUpFormData = z.infer<typeof signUpSchema>;
 export type ForgetFormData = z.infer<typeof forgetSchema>;
+export type VerifyCodeFormData = z.infer<typeof verifyCodeSchema>;
