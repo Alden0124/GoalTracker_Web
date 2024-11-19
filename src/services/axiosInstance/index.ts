@@ -1,15 +1,13 @@
 import axios from "axios";
 
-// 根據環境設置 baseURL
+// 使用 import.meta.env 訪問環境變數，如果沒有則使用生產環境的 URL
 const baseURL =
-  process.env.NODE_ENV === "development"
-    ? "/api"
-    : "https://goaltracker-admin.onrender.com";
+  import.meta.env.VITE_API_URL || "https://goaltracker-admin.onrender.com/api";
 
 // 創建 axios 實例
 const instance = axios.create({
   baseURL,
-  timeout: 15000, // 請求超時時間
+  timeout: 15000,
   headers: {
     "Content-Type": "application/json",
   },
@@ -55,7 +53,7 @@ instance.interceptors.response.use(
         default:
           console.error("發生錯誤:", error.response.data);
       }
-      console.log(error)
+      console.log(error);
     }
     return Promise.reject({
       respData: error.response.data,
