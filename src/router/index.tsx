@@ -75,7 +75,6 @@ const routes = [
           </Suspense>
         ),
       },
-      ResetPassword,
     ],
   },
 ];
