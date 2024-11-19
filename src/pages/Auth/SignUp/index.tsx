@@ -33,12 +33,13 @@ const SignUp = () => {
       if (result) {
         notification.success({
           title: "註冊成功",
-          text: '請至信箱收取驗整碼，即將導向驗證頁面',
+          text: "請至信箱收取驗整碼，即將導向驗證頁面",
         });
         await handleSendVerificationCode(data.email);
       }
-    } catch (error: any) {
-      const { errorMessage } = error;
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "發生未知錯誤";
       notification.error({
         title: "註冊失敗",
         text: errorMessage,

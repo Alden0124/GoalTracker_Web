@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 // 欄位驗證
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,8 +7,14 @@ import { forgetSchema, type ForgetFormData } from "@/schemas/auth.schema";
 import Input from "@/components/ui/Input";
 // icon
 import { FaArrowLeft } from "react-icons/fa";
+// API
+import { FETCH_AUTH, type ApiError } from "@/services/api/auth";
+// alert
+import { notification } from "@/utils/notification";
 
 const Forget = () => {
+  const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
@@ -18,12 +24,30 @@ const Forget = () => {
     mode: "onSubmit",
   });
 
-  const onSubmit = (data: ForgetFormData) => {
-    console.log(data);
-    // 處理登入邏輯
+  const handleForgotPassword = async (email: string) => {
+    try {
+      const resp = await FETCH_AUTH["Forgot-password"]({ email });
+      console.log(resp);
+      notification.success({
+        title: "成功",
+        text: resp.message,
+      });
+      navigate(`/resetPassword/?email=${email}`);
+    } catch (err: unknown) {
+      const error = err as ApiError;
+      notification.error({
+        title: "錯誤",
+        text: error.errorMessage || "",
+      });
+    }
   };
 
-  const onError = (errors: any) => {
+  const onSubmit = (data: ForgetFormData) => {
+    // 處理登入邏輯
+    handleForgotPassword(data.email);
+  };
+
+  const onError = (errors: unknown) => {
     console.log("表單錯誤:", errors);
     // 錯誤會自動顯示在對應的 Input 元件下方
   };

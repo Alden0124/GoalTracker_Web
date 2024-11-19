@@ -9,12 +9,11 @@ import {
 // 組件
 import Input from "@/components/ui/Input";
 import { useEffect } from "react";
-import ResendButton from '@/components/Auth/VerifyCode/ResendButton'
+import ResendButton from "@/components/Auth/VerifyCode/ResendButton";
 // alert
 import { notification } from "@/utils/notification";
 // 自定義hook
 import { useAuth } from "@/hooks/useAuth";
-
 
 const VerifyCode = () => {
   const navigate = useNavigate();
@@ -22,17 +21,16 @@ const VerifyCode = () => {
   const email = searchParams.get("email");
   const { handleVerifyCode } = useAuth();
 
-  // 提前返回
-  if (!email) {
-    useEffect(() => {
+  // 將 useEffect 移到頂層
+  useEffect(() => {
+    if (!email) {
       notification.error({
         title: "錯誤",
         text: "缺少必要的 email 參數",
       });
       navigate("/signIn");
-    }, []);
-    return null;
-  }
+    }
+  }, [email, navigate]);
 
   const {
     register,
@@ -42,6 +40,11 @@ const VerifyCode = () => {
     resolver: zodResolver(verifyCodeSchema),
     mode: "onSubmit",
   });
+
+  // 如果沒有 email，直接返回 null
+  if (!email) {
+    return null;
+  }
 
   const onSubmit = async (data: VerifyCodeFormData) => {
     await handleVerifyCode(email, data.code);

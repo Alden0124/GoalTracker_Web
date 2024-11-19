@@ -34,9 +34,26 @@ export const forgetSchema = z.object({
   email: formRules.email,
 });
 
+// 重設密碼驗證表
+export const restPasswordSchema = z
+  .object({
+    code: z
+      .string()
+      .min(1, "驗證碼為必填")
+      .length(6, "驗證碼必須為6位數字")
+      .regex(/^\d+$/, "驗證碼只能包含數字"),
+    password: formRules.Password,
+    confirmPassword: z.string().min(1, "請確認密碼"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "密碼不一致",
+    path: ["confirmPassword"],
+  });
+
 // 驗證碼表單驗證
 export const verifyCodeSchema = z.object({
-  code: z.string()
+  code: z
+    .string()
     .min(1, "驗證碼為必填")
     .length(6, "驗證碼必須為6位數字")
     .regex(/^\d+$/, "驗證碼只能包含數字"),
@@ -45,4 +62,5 @@ export const verifyCodeSchema = z.object({
 export type SignInFormData = z.infer<typeof signInSchema>;
 export type SignUpFormData = z.infer<typeof signUpSchema>;
 export type ForgetFormData = z.infer<typeof forgetSchema>;
+export type restPasswordFormData = z.infer<typeof restPasswordSchema>;
 export type VerifyCodeFormData = z.infer<typeof verifyCodeSchema>;

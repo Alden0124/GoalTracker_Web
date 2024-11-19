@@ -21,7 +21,7 @@ const SendCode = () => {
     // 處理登入邏輯
   };
 
-  const onError = (errors: any) => {
+  const onError = (errors: unknown) => {
     console.log("表單錯誤:", errors);
     // 錯誤會自動顯示在對應的 Input 元件下方
   };

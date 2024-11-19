@@ -28,10 +28,16 @@ instance.interceptors.request.use(
   }
 );
 
+// 定義錯誤響應的介面
+export interface ApiError {
+  respData: any;
+  errorMessage: string;
+  status: number;
+}
+
 // 響應攔截器
 instance.interceptors.response.use(
   (response) => {
-    // 直接返回響應數據
     return response.data;
   },
   (error) => {
@@ -55,7 +61,7 @@ instance.interceptors.response.use(
       }
       console.log(error);
     }
-    return Promise.reject({
+    return Promise.reject<ApiError>({
       respData: error.response.data,
       errorMessage: error.response?.data?.message,
       status: error.response.status,

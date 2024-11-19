@@ -1,25 +1,70 @@
+import { useNavigate, useSearchParams } from "react-router-dom";
 // 欄位驗證
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signUpSchema, type SignUpFormData } from "@/schemas/auth.schema";
+import {
+  restPasswordSchema,
+  type restPasswordFormData,
+} from "@/schemas/auth.schema";
 // 組件
 import Input from "@/components/ui/Input";
+// api
+import { FETCH_AUTH, type ApiError } from "@/services/api/auth";
+// alert
+import { notification } from "@/utils/notification";
+import { useEffect } from "react";
 
 const ResetPassword = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const email = searchParams.get("email");
 
   const {
     register,
-    // handleSubmit,
+    handleSubmit,
     formState: { errors },
-  } = useForm<SignUpFormData>({
-    resolver: zodResolver(signUpSchema),
+  } = useForm<restPasswordFormData>({
+    resolver: zodResolver(restPasswordSchema),
     mode: "onSubmit",
   });
 
+  useEffect(() => {
+    if (!email) {
+      notification.error({
+        title: "錯誤",
+        text: "缺少必要的 email 參數",
+      });
+      navigate("/signIn");
+    }
+  }, [email, navigate]);
 
+  if (!email) return null;
 
+  const handleResetPassword = async (data: restPasswordFormData) => {
+    try {
+      const resp = await FETCH_AUTH.ResetPassword({
+        email,
+        code: data.code,
+        newPassword: data.password,
+      });
+      notification.success({
+        title: "重設密碼成功",
+        text: resp.message,
+      });
+      navigate("/signIn");
+    } catch (error: unknown) {
+      const err = error as ApiError;
+      notification.error({
+        title: "密碼變更失敗",
+        text: err.errorMessage,
+      });
+    }
+  };
 
-
+  const onSubmit = (data: restPasswordFormData) => {
+    console.log(data);
+    handleResetPassword(data);
+  };
 
   return (
     <main className="w-full min-h-[calc(100vh-64px)] flex flex-col justify-center items-center dark:bg-background-dark">
@@ -28,12 +73,21 @@ const ResetPassword = () => {
       </h1>
 
       <form
+        onSubmit={handleSubmit(onSubmit)}
         className="w-full max-w-sm mt-8 space-y-4 px-4"
         noValidate
       >
         <Input
+          {...register("code")}
+          id="code"
+          label="驗證碼"
+          placeholder="請輸入驗證碼"
+          error={errors?.code?.message}
+        />
+
+        <Input
           {...register("password")}
-          id="password"
+          id="newPassword"
           type="password"
           label="密碼"
           placeholder="密碼"
