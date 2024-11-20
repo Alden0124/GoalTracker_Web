@@ -6,9 +6,9 @@ import { signInSchema, type SignInFormData } from "@/schemas/auth.schema";
 // 組件
 import Input from "@/components/ui/Input";
 import GoogleLoginButton from "@/components/Auth/OAuth/GoogleLoginButton";
+import LineLoginButton from "@/components/Auth/OAuth/LineLoginButton";
 // icon
 // import { FcGoogle } from "react-icons/fc";
-import { FaFacebook, FaLine } from "react-icons/fa";
 // api
 import { FETCH_AUTH } from "@/services/api/auth";
 // alert
@@ -20,7 +20,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const SignIn = () => {
   const { handleSendVerificationCode } = useAuth();
-
+  
   const {
     register,
     handleSubmit,
@@ -67,10 +67,10 @@ const SignIn = () => {
   };
 
   return (
-    <GoogleOAuthProvider 
+    <GoogleOAuthProvider
       clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
       onScriptLoadError={() => {
-        console.log('Google Script 載入失敗');
+        console.log("Google Script 載入失敗");
       }}
     >
       <main className="w-full min-h-[calc(100vh-64px)] flex flex-col justify-center items-center dark:bg-background-dark">
@@ -123,24 +123,7 @@ const SignIn = () => {
           </div>
 
           <GoogleLoginButton />
-
-          <button
-            type="button"
-            className="w-full border text-center text-[16px] rounded-[5px] hover:bg-[gray]/10 dark:text-foreground-dark dark:border-gray-600 p-[6px] flex items-center justify-center gap-2"
-          >
-            <FaFacebook
-              size={24}
-              className="text-[#1877F2] dark:text-[#4267B2]"
-            />
-            使用 Facebook 登入
-          </button>
-          <button
-            type="button"
-            className="w-full border text-center text-[16px] rounded-[5px] hover:bg-[gray]/10 dark:text-foreground-dark dark:border-gray-600 p-[6px] flex items-center justify-center gap-2"
-          >
-            <FaLine size={24} className="text-[#06C755] dark:text-[#00B900]" />
-            使用 LINE 登入
-          </button>
+          <LineLoginButton />
 
           <Link
             to={"/forget"}

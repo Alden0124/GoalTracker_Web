@@ -10,7 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 // 提示窗
 import { notification } from "@/utils/notification";
 // api
-import { FETCH_AUTH } from "@/services/api/auth";
+import { FETCH_AUTH, type ApiError } from "@/services/api/auth";
 
 const SignUp = () => {
   const { handleSendVerificationCode } = useAuth();
@@ -37,9 +37,8 @@ const SignUp = () => {
         });
         await handleSendVerificationCode(data.email);
       }
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error ? error.message : "發生未知錯誤";
+    } catch (err: unknown) {
+      const { errorMessage } = err as ApiError;
       notification.error({
         title: "註冊失敗",
         text: errorMessage,

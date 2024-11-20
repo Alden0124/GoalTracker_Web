@@ -30,7 +30,7 @@ instance.interceptors.request.use(
 
 // 定義錯誤響應的介面
 export interface ApiError {
-  respData: any;
+  respData: unknown;
   errorMessage: string;
   status: number;
 }

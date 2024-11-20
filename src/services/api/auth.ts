@@ -18,7 +18,7 @@ export const FETCH_AUTH = {
    * @param {string} data.password - 用戶密碼
    * @returns {Promise<AuthResponse>} 返回註冊結果
    */
-  SignUp: (data: object) => axiosInstance.post("/signUp", data),
+  SignUp: (data: object) => axiosInstance.post("/auth/signUp", data),
 
   /**
    * 發送郵箱驗證碼 API
@@ -27,7 +27,7 @@ export const FETCH_AUTH = {
    * @returns {Promise<AuthResponse>} 返回發送結果
    */
   "send-verification-code": (data: { email: string }): Promise<AuthResponse> =>
-    axiosInstance.post("/send-verification-code", data),
+    axiosInstance.post("/verification/send-code", data),
 
   /**
    * 用戶登入 API
@@ -36,7 +36,7 @@ export const FETCH_AUTH = {
    * @param {string} data.password - 用戶密碼
    * @returns {Promise<AuthResponse>} 返回登入結果
    */
-  SingIn: (data: object) => axiosInstance.post("signIn", data),
+  SingIn: (data: object) => axiosInstance.post("/auth/signIn", data),
 
   /**
    * 驗證郵箱驗證碼 API
@@ -45,7 +45,7 @@ export const FETCH_AUTH = {
    * @param {string} data.code - 驗證碼
    * @returns {Promise<AuthResponse>} 返回驗證結果
    */
-  VerifyCode: (data: object) => axiosInstance.post("/verify-code", data),
+  VerifyCode: (data: object) => axiosInstance.post("/verification/verify", data),
 
   /**
    * 刷新 Token API
@@ -53,7 +53,7 @@ export const FETCH_AUTH = {
    * @param {string} data.refreshToken - 刷新令牌
    * @returns {Promise<AuthResponse>} 返回新的訪問令牌
    */
-  RefreshToken: (data: object) => axiosInstance.post("/refresh-token", data),
+  RefreshToken: (data: object) => axiosInstance.post("/auth/refresh-token", data),
 
   /**
    * 忘記密碼 API
@@ -62,7 +62,7 @@ export const FETCH_AUTH = {
    * @returns {Promise<AuthResponse>} 返回重置密碼郵件發送結果
    */
   "Forgot-password": (data: { email: string }): Promise<AuthResponse> =>
-    axiosInstance.post("/forgot-password", data),
+    axiosInstance.post("/verification/forgot-password", data),
 
   /**
    * 重設密碼 API
@@ -73,10 +73,13 @@ export const FETCH_AUTH = {
    * @returns {Promise<AuthResponse>} 返回重置密碼郵件發送結果
    */
   ResetPassword: (data: object): Promise<AuthResponse> =>
-    axiosInstance.post("reset-password", data),
+    axiosInstance.post("/verification/reset-password", data),
 
-  GoogleLogin: (data: { token: string }): Promise<GoogleLoginResponse> => 
-    axiosInstance.post('/auth/google', data)
+  GoogleLogin: (data: { token: string }): Promise<GoogleLoginResponse> =>
+    axiosInstance.post("/auth/signIn/google", data),
+
+  LineLogin: (data: object): Promise<ApiError> =>
+    axiosInstance.post("/auth/signIn/line", data),
 };
 
 // 導出 API 錯誤類型
