@@ -8,7 +8,9 @@ import Input from "@/components/ui/Input";
 // icon
 import { FaArrowLeft } from "react-icons/fa";
 // API
-import { FETCH_AUTH, type ApiError } from "@/services/api/auth";
+import { FETCH_AUTH } from "@/services/api/auth";
+// type
+import { handleError } from "@/utils/errorHandler";
 // alert
 import { notification } from "@/utils/notification";
 
@@ -34,11 +36,7 @@ const Forget = () => {
       });
       navigate(`/resetPassword/?email=${email}`);
     } catch (err: unknown) {
-      const error = err as ApiError;
-      notification.error({
-        title: "錯誤",
-        text: error.errorMessage || "",
-      });
+      handleError(err, "錯誤");
     }
   };
 

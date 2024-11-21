@@ -1,6 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Suspense, lazy } from "react";
-import LineCallback from "@/pages/Auth/LineCallback";
 
 const DefaultLayout = lazy(() => import("@/layout/DefaultLayout"));
 const Home = lazy(() => import("@/pages/Home"));
@@ -75,10 +74,6 @@ const routes = [
             <ResetPassword />
           </Suspense>
         ),
-      },
-      {
-        path: "/line/callback",
-        element: <LineCallback />,
       },
     ],
   },

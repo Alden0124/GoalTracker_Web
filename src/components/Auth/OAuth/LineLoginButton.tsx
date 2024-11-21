@@ -3,7 +3,6 @@ import { FaLine } from "react-icons/fa";
 const LineLoginButton = () => {
   const handleLineLogin = async () => {
     try {
-      // 使用环境变量构建 LINE 授权 URL
       const lineAuthUrl =
         "https://access.line.me/oauth2/v2.1/authorize" +
         "?response_type=code" +
@@ -12,10 +11,10 @@ const LineLoginButton = () => {
         "&state=456456456" +
         "&scope=openid%20profile";
 
-      // 重定向用户到 LINE 授权页面
+      // 重定向用户到 LINE 授權页面
       window.location.href = lineAuthUrl;
     } catch (error) {
-      console.error("LINE 登录失败:", error);
+      console.error("LINE 登陸失敗:", error);
     }
   };
 

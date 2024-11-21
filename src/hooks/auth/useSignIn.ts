@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 // 型別
 import { SignInResponse } from "@/services/api/auth/type";
@@ -18,54 +19,58 @@ export const useSignInHandler = () => {
   const dispatch = useAppDispatch();
   const { handleSendVerificationCode } = useEmail();
 
-  const handelSignInSucess = (response: SignInResponse) => {
-    console.log(response);
-    const { message, accessToken, user } = response;
-    const { id, email, avatar, isEmailVerified, providers = [] } = user;
-    // 1. 保存cookie
-    SET_COOKIE(accessToken);
+  const handelSignInSucess = useCallback(
+    (response: SignInResponse) => {
+      console.log(response);
+      const { message, accessToken, user } = response;
+      const { id, email, avatar, isEmailVerified, providers = [] } = user;
+      // 1. 保存cookie
+      SET_COOKIE(accessToken);
 
-    // 2. 使用者資料存進redux
-    dispatch(
-      setUserInfo({
-        accessToken: accessToken,
-        userInfo: { id, email, avatar, isEmailVerified, providers },
-      })
-    );
+      // 2. 使用者資料存進redux
+      dispatch(
+        setUserInfo({
+          accessToken: accessToken,
+          userInfo: { id, email, avatar, isEmailVerified, providers },
+        })
+      );
 
-    // 3. 顯示成功訊息
-    notification.success({
-      title: message,
-    });
-
-    // 4. 導航到指定頁面
-    navigate("/home");
-  };
-
-  const handleSignInError = async (
-    err: unknown,
-    signInFormData?: SignInFormDataType
-  ) => {
-    const error = err as {
-      errorMessage: string;
-      respData?: { needVerification: boolean };
-    };
-
-    const { errorMessage, respData } = error;
-
-    if (respData?.needVerification && signInFormData?.email) {
-      notification.error({
-        title: "登入失敗",
-        text: `${errorMessage}，請至信箱收取驗整碼，即將導向驗證頁面`,
+      // 3. 顯示成功訊息
+      notification.success({
+        title: message,
       });
-      await handleSendVerificationCode(signInFormData.email);
-    } else {
-      notification.error({
-        title: "登入失敗",
-        text: errorMessage,
-      });
-    }
-  };
+
+      // 4. 導航到指定頁面
+      navigate("/home");
+    },
+    [dispatch, navigate]
+  );
+
+  const handleSignInError = useCallback(
+    async (err: unknown, signInFormData?: SignInFormDataType) => {
+      const error = err as {
+        errorMessage: string;
+        respData?: { needVerification: boolean };
+      };
+
+      const { errorMessage, respData } = error;
+
+      if (respData?.needVerification && signInFormData?.email) {
+        notification.error({
+          title: "登入失敗",
+          text: `${errorMessage}，請至信箱收取驗整碼，即將導向驗證頁面`,
+        });
+        await handleSendVerificationCode(signInFormData.email);
+      } else {
+        notification.error({
+          title: "登入失敗",
+          text: errorMessage,
+        });
+        navigate("/signIn");
+      }
+    },
+    [handleSendVerificationCode, navigate]
+  );
 
   return { handelSignInSucess, handleSignInError };
 };

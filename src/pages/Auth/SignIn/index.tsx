@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 // 欄位驗證
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,12 +18,15 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 // redux
 import { useAppSelector } from "@/hooks/common/useAppReduxs";
 import { selectUser } from "@/stores/slice/userReducer";
+import { useEffect } from "react";
 
 const SignIn = () => {
+  const [searchParam] = useSearchParams();
   const { handelSignInSucess, handleSignInError } = useSignInHandler();
-
   const user = useAppSelector(selectUser);
   console.log(user);
+
+  const code = searchParam.get("code");
 
   const {
     register,
@@ -33,6 +36,20 @@ const SignIn = () => {
     resolver: zodResolver(signInSchema),
     mode: "onSubmit",
   });
+
+  useEffect(() => {
+    if (code) {
+      try {
+        (async () => {
+          // 調用後端 API
+          const resp = await FETCH_AUTH.LineLogin({ code });
+          handelSignInSucess(resp);
+        })();
+      } catch (err: unknown) {
+        handleSignInError(err);
+      }
+    }
+  }, [code, handelSignInSucess, handleSignInError]);
 
   const handleSignIn = async (signInFormData: SignInFormDataType) => {
     try {
@@ -44,6 +61,7 @@ const SignIn = () => {
   };
 
   const onSubmit = (data: SignInFormDataType) => {
+    console.log(456);
     handleSignIn(data);
   };
 

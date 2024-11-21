@@ -9,7 +9,9 @@ import {
 // 組件
 import Input from "@/components/ui/Input";
 // api
-import { FETCH_AUTH, type ApiError } from "@/services/api/auth";
+import { FETCH_AUTH } from "@/services/api/auth";
+// type
+import { handleError } from "@/utils/errorHandler";
 // alert
 import { notification } from "@/utils/notification";
 import { useEffect } from "react";
@@ -53,11 +55,7 @@ const ResetPassword = () => {
       });
       navigate("/signIn");
     } catch (error: unknown) {
-      const err = error as ApiError;
-      notification.error({
-        title: "密碼變更失敗",
-        text: err.errorMessage,
-      });
+      handleError(error, "密碼變更失敗");
     }
   };
 
