@@ -1,6 +1,8 @@
 import axios from "axios";
 // cookie
 import { GET_COOKIE, REMOVE_COOKIE } from "@/utils/cookies";
+// type
+import { ApiError } from "./type";
 
 // 使用 import.meta.env 訪問環境變數，如果沒有則使用生產環境的 URL
 const baseURL =
@@ -29,13 +31,6 @@ instance.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
-// 定義錯誤響應的介面
-export interface ApiError {
-  respData: unknown;
-  errorMessage: string;
-  status: number;
-}
 
 // 響應攔截器
 instance.interceptors.response.use(

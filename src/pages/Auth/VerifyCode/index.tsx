@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   verifyCodeSchema,
   type VerifyCodeFormData,
-} from "@/schemas/auth.schema";
+} from "@/schemas/authSchema";
 // 組件
 import Input from "@/components/ui/Input";
 import { useEffect } from "react";
@@ -13,13 +13,13 @@ import ResendButton from "@/components/Auth/VerifyCode/ResendButton";
 // alert
 import { notification } from "@/utils/notification";
 // 自定義hook
-import { useAuth } from "@/hooks/useAuth";
+import { useEmail } from "@/hooks/auth/useEmail";
 
 const VerifyCode = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email");
-  const { handleVerifyCode } = useAuth();
+  const { handleVerifyCode } = useEmail();
 
   // 將 useEffect 移到頂層
   useEffect(() => {

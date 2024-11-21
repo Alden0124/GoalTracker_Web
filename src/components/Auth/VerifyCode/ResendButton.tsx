@@ -1,5 +1,5 @@
-import { useCountdown } from "@/hooks/useCountdown";
-import { useAuth } from "@/hooks/useAuth";
+import { useCountdown } from "@/hooks/common/useCountdown";
+import { useEmail } from "@/hooks/auth/useEmail";
 
 interface ResendButtonProps {
   email: string;
@@ -8,7 +8,7 @@ interface ResendButtonProps {
 
 const ResendButton = ({ email, className = "" }: ResendButtonProps) => {
   const { countdown, startCountdown, isActive } = useCountdown();
-  const { handleSendVerificationCode } = useAuth();
+  const { handleSendVerificationCode } = useEmail();
 
   const handleResend = async () => {
     if (isActive) return;

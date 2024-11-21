@@ -1,8 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 // 欄位驗證
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signInSchema, type SignInFormData } from "@/schemas/auth.schema";
+import { signInSchema, type SignInFormDataType } from "@/schemas/authSchema";
 // 組件
 import Input from "@/components/ui/Input";
 import GoogleLoginButton from "@/components/Auth/OAuth/GoogleLoginButton";
@@ -11,59 +11,60 @@ import LineLoginButton from "@/components/Auth/OAuth/LineLoginButton";
 // import { FcGoogle } from "react-icons/fc";
 // api
 import { FETCH_AUTH } from "@/services/api/auth";
-// alert
-import { notification } from "@/utils/notification";
 // 自定義hook
-import { useAuth } from "@/hooks/useAuth";
+import { useSignInHandler } from "@/hooks/auth/useSignIn";
 // google登入
 import { GoogleOAuthProvider } from "@react-oauth/google";
-// cookie
-import { SET_COOKIE } from "@/utils/cookies";
+// redux
+import { useAppSelector } from "@/hooks/common/useAppReduxs";
+import { selectUser } from "@/stores/slice/userReducer";
+import { useEffect } from "react";
 
 const SignIn = () => {
-  const { handleSendVerificationCode } = useAuth();
+  const [searchParam] = useSearchParams();
+  const { handelSignInSucess, handleSignInError } = useSignInHandler();
+  const user = useAppSelector(selectUser);
+  console.log(user);
+
+  const code = searchParam.get("code");
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignInFormData>({
+  } = useForm<SignInFormDataType>({
     resolver: zodResolver(signInSchema),
     mode: "onSubmit",
   });
 
-  const handleSignIn = async (data: SignInFormData) => {
-    try {
-      const resp = await FETCH_AUTH.SingIn(data);
-      if (resp) {
-        const { message, user } = resp;
-        notification.success({
-          title: message,
-        });
-        console.log(user);
-      }
-    } catch (err: unknown) {
-      const error = err as {
-        errorMessage: string;
-        respData?: { needVerification: boolean };
+  useEffect(() => {
+    // line登入
+    if (code) {
+      const handleLineLogin = async () => {
+        try {
+          const resp = await FETCH_AUTH.LineLogin({ code });
+          handelSignInSucess(resp);
+        } catch (err: unknown) {
+          console.log('Line登入錯誤:', err);
+          handleSignInError(err);
+        }
       };
-      const { errorMessage, respData } = error;
-      if (respData?.needVerification) {
-        notification.error({
-          title: "登入失敗",
-          text: `${errorMessage}，請至信箱收取驗整碼，即將導向驗證頁面`,
-        });
-        await handleSendVerificationCode(data.email);
-      } else {
-        notification.error({
-          title: "登入失敗",
-          text: errorMessage,
-        });
-      }
+      
+      handleLineLogin();
+    }
+  }, [code, handelSignInSucess, handleSignInError]);
+
+  // 非第三方用戶登入
+  const handleSignIn = async (signInFormData: SignInFormDataType) => {
+    try {
+      const resp = await FETCH_AUTH.SingIn(signInFormData);
+      handelSignInSucess(resp);
+    } catch (err: unknown) {
+      handleSignInError(err, signInFormData);
     }
   };
 
-  const onSubmit = (data: SignInFormData) => {
+  const onSubmit = (data: SignInFormDataType) => {
     handleSignIn(data);
   };
 

@@ -1,4 +1,4 @@
-import axiosInstance, { type ApiError } from "@/services/axiosInstance";
+import axiosInstance from "@/services/axiosInstance";
 
 // 定義 API 響應的基本數據結構
 interface AuthResponse {
@@ -9,5 +9,4 @@ export const FETCH_USER = {
   UsetProfile: (): Promise<AuthResponse> => axiosInstance.get("/user/Profile"),
 };
 
-// 導出 API 錯誤類型
-export { type ApiError };
+

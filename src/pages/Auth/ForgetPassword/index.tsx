@@ -2,13 +2,15 @@ import { Link, useNavigate } from "react-router-dom";
 // 欄位驗證
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { forgetSchema, type ForgetFormData } from "@/schemas/auth.schema";
+import { forgetSchema, type ForgetFormData } from "@/schemas/authSchema";
 // 組件
 import Input from "@/components/ui/Input";
 // icon
 import { FaArrowLeft } from "react-icons/fa";
 // API
-import { FETCH_AUTH, type ApiError } from "@/services/api/auth";
+import { FETCH_AUTH } from "@/services/api/auth";
+// type
+import { handleError } from "@/utils/errorHandler";
 // alert
 import { notification } from "@/utils/notification";
 
@@ -34,11 +36,7 @@ const Forget = () => {
       });
       navigate(`/resetPassword/?email=${email}`);
     } catch (err: unknown) {
-      const error = err as ApiError;
-      notification.error({
-        title: "錯誤",
-        text: error.errorMessage || "",
-      });
+      handleError(err, "錯誤");
     }
   };
 

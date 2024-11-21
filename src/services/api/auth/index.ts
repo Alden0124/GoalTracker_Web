@@ -1,9 +1,5 @@
-import axiosInstance, { type ApiError } from "@/services/axiosInstance";
-import {
-  AuthResponse,
-  SignInResponse,
-  GoogleLoginResponse,
-} from "@/services/api/auth/type";
+import axiosInstance from "@/services/axiosInstance";
+import { AuthResponse, SignInResponse } from "@/services/api/auth/type";
 
 export const FETCH_AUTH = {
   /**
@@ -28,10 +24,10 @@ export const FETCH_AUTH = {
   signOut: (data: object): Promise<AuthResponse> =>
     axiosInstance.post("/auth/signout", data),
 
-  GoogleLogin: (data: { token: string }): Promise<GoogleLoginResponse> =>
+  GoogleLogin: (data: { token: string }): Promise<SignInResponse> =>
     axiosInstance.post("/auth/signIn/google", data),
 
-  LineLogin: (data: object): Promise<ApiError> =>
+  LineLogin: (data: object): Promise<SignInResponse> =>
     axiosInstance.post("/auth/signIn/line", data),
 
   /**
@@ -82,6 +78,3 @@ export const FETCH_AUTH = {
   RefreshToken: (data: object) =>
     axiosInstance.post("/auth/refresh-token", data),
 };
-
-// 導出 API 錯誤類型
-export { type ApiError };
