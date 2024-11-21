@@ -1,4 +1,6 @@
 import axios from "axios";
+// cookie
+import { GET_COOKIE, REMOVE_COOKIE } from "@/utils/cookies";
 
 // 使用 import.meta.env 訪問環境變數，如果沒有則使用生產環境的 URL
 const baseURL =
@@ -15,13 +17,13 @@ const instance = axios.create({
 
 // 請求攔截器
 instance.interceptors.request.use(
-  (config) => {
-    // 從 localStorage 獲取 token
-    const token = localStorage.getItem("token");
+  (req) => {
+    // 從 cookit 獲取 token
+    const token = GET_COOKIE() || false;
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      req.headers.Authorization = `Bearer ${token}`;
     }
-    return config;
+    return req;
   },
   (error) => {
     return Promise.reject(error);
@@ -45,7 +47,7 @@ instance.interceptors.response.use(
       switch (error.response.status) {
         case 401:
           // 未授權，可以在這裡處理登出邏輯
-          localStorage.removeItem("token");
+          REMOVE_COOKIE();
           // 可以在這裡添加重定向到登錄頁面的邏輯
           break;
         case 403:

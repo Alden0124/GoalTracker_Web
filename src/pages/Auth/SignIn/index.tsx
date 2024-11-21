@@ -17,10 +17,12 @@ import { notification } from "@/utils/notification";
 import { useAuth } from "@/hooks/useAuth";
 // google登入
 import { GoogleOAuthProvider } from "@react-oauth/google";
+// cookie
+import { SET_COOKIE } from "@/utils/cookies";
 
 const SignIn = () => {
   const { handleSendVerificationCode } = useAuth();
-  
+
   const {
     register,
     handleSubmit,
@@ -32,10 +34,14 @@ const SignIn = () => {
 
   const handleSignIn = async (data: SignInFormData) => {
     try {
-      await FETCH_AUTH.SingIn(data);
-      notification.success({
-        title: "登入成功",
-      });
+      const resp = await FETCH_AUTH.SingIn(data);
+      if (resp) {
+        const { message, user } = resp;
+        notification.success({
+          title: message,
+        });
+        console.log(user);
+      }
     } catch (err: unknown) {
       const error = err as {
         errorMessage: string;
