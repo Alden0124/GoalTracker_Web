@@ -13,6 +13,8 @@ import { setUserInfo } from "@/stores/slice/userReducer";
 import { useEmail } from "./useEmail";
 // 欄位驗證
 import { SignInFormDataType } from "@/schemas/authSchema";
+// type
+import { isApiError } from "@/services/axiosInstance/type/typeGuards";
 
 export const useSignInHandler = () => {
   const navigate = useNavigate();
@@ -48,20 +50,19 @@ export const useSignInHandler = () => {
 
   const handleSignInError = useCallback(
     async (err: unknown, signInFormData?: SignInFormDataType) => {
-      const error = err as {
-        errorMessage: string;
-        respData?: { needVerification: boolean };
-      };
+      if (isApiError(err)) {
+        const { errorMessage, respData } = err;
 
-      const { errorMessage, respData } = error;
+        // 尚未驗證信箱
+        if (respData?.needVerification && signInFormData?.email) {
+          notification.error({
+            title: "登入失敗",
+            text: `${errorMessage}，請至信箱收取驗整碼，即將導向驗證頁面`,
+          });
+          await handleSendVerificationCode(signInFormData.email);
+          return;
+        }
 
-      if (respData?.needVerification && signInFormData?.email) {
-        notification.error({
-          title: "登入失敗",
-          text: `${errorMessage}，請至信箱收取驗整碼，即將導向驗證頁面`,
-        });
-        await handleSendVerificationCode(signInFormData.email);
-      } else {
         notification.error({
           title: "登入失敗",
           text: errorMessage,

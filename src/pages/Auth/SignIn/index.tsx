@@ -38,19 +38,23 @@ const SignIn = () => {
   });
 
   useEffect(() => {
+    // line登入
     if (code) {
-      try {
-        (async () => {
-          // 調用後端 API
+      const handleLineLogin = async () => {
+        try {
           const resp = await FETCH_AUTH.LineLogin({ code });
           handelSignInSucess(resp);
-        })();
-      } catch (err: unknown) {
-        handleSignInError(err);
-      }
+        } catch (err: unknown) {
+          console.log('Line登入錯誤:', err);
+          handleSignInError(err);
+        }
+      };
+      
+      handleLineLogin();
     }
   }, [code, handelSignInSucess, handleSignInError]);
 
+  // 非第三方用戶登入
   const handleSignIn = async (signInFormData: SignInFormDataType) => {
     try {
       const resp = await FETCH_AUTH.SingIn(signInFormData);
@@ -61,7 +65,6 @@ const SignIn = () => {
   };
 
   const onSubmit = (data: SignInFormDataType) => {
-    console.log(456);
     handleSignIn(data);
   };
 

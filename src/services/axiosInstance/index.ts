@@ -2,8 +2,8 @@ import axios from "axios";
 // cookie
 import { GET_COOKIE, REMOVE_COOKIE } from "@/utils/cookies";
 // type
-import { ApiError } from './type'
- 
+import { ApiError } from "./type";
+
 // 使用 import.meta.env 訪問環境變數，如果沒有則使用生產環境的 URL
 const baseURL =
   import.meta.env.VITE_API_URL || "https://goaltracker-admin.onrender.com/api";
