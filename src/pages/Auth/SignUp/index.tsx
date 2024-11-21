@@ -2,18 +2,18 @@ import { Link } from "react-router-dom";
 // 欄位驗證
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signUpSchema, type SignUpFormData } from "@/schemas/auth.schema";
+import { signUpSchema, type SignUpFormData } from "@/schemas/authSchema";
 // 組件
 import Input from "@/components/ui/Input";
 // 自定義hook
-import { useAuth } from "@/hooks/useAuth";
+import { useEmail } from "@/hooks/auth/useEmail";
 // 提示窗
 import { notification } from "@/utils/notification";
 // api
 import { FETCH_AUTH, type ApiError } from "@/services/api/auth";
 
 const SignUp = () => {
-  const { handleSendVerificationCode } = useAuth();
+  const { handleSendVerificationCode } = useEmail();
 
   const {
     register,

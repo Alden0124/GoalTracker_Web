@@ -2,7 +2,6 @@ import axiosInstance, { type ApiError } from "@/services/axiosInstance";
 import {
   AuthResponse,
   SignInResponse,
-  GoogleLoginResponse,
 } from "@/services/api/auth/type";
 
 export const FETCH_AUTH = {
@@ -28,7 +27,7 @@ export const FETCH_AUTH = {
   signOut: (data: object): Promise<AuthResponse> =>
     axiosInstance.post("/auth/signout", data),
 
-  GoogleLogin: (data: { token: string }): Promise<GoogleLoginResponse> =>
+  GoogleLogin: (data: { token: string }): Promise<SignInResponse> =>
     axiosInstance.post("/auth/signIn/google", data),
 
   LineLogin: (data: object): Promise<ApiError> =>

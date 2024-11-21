@@ -4,16 +4,13 @@ export interface AuthResponse {
 }
 
 export interface SignInResponse extends AuthResponse {
-  accessToken: string
-  user: {
-    avatar: string
-    email: string
-    id: string
-    isEmailVerified: boolean
-  }
-}
-
-export interface GoogleLoginResponse extends AuthResponse {
+  message: string;
   accessToken: string;
-  // 其他可能的返回數據
+  user: {
+    id: string;
+    email?: string;
+    avatar?: string;
+    isEmailVerified: boolean;
+    providers?: Array<'google' | 'line'>
+  };
 }

@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   restPasswordSchema,
   type restPasswordFormData,
-} from "@/schemas/auth.schema";
+} from "@/schemas/authSchema";
 // 組件
 import Input from "@/components/ui/Input";
 // api

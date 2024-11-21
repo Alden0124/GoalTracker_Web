@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { FETCH_AUTH } from "@/services/api/auth";
 import { notification } from "@/utils/notification";
 
-export const useAuth = () => {
+export const useEmail = () => {
   const navigate = useNavigate();
 
   const handleSendVerificationCode = async (email: string) => {

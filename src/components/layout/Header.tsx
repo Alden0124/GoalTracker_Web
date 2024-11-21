@@ -5,7 +5,7 @@ import { IoSunnyOutline } from "react-icons/io5";
 // i18n
 import { useTranslation } from "react-i18next";
 // 自訂一hook
-import { useTheme } from "@/hooks/useTheme";
+import { useTheme } from "@/hooks/style/useTheme";
 import { Link } from "react-router-dom";
 
 const Header = () => {

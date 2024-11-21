@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 // 欄位驗證
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { forgetSchema, type ForgetFormData } from "@/schemas/auth.schema";
+import { forgetSchema, type ForgetFormData } from "@/schemas/authSchema";
 // 組件
 import Input from "@/components/ui/Input";
 // icon

@@ -59,7 +59,7 @@ export const verifyCodeSchema = z.object({
     .regex(/^\d+$/, "驗證碼只能包含數字"),
 });
 
-export type SignInFormData = z.infer<typeof signInSchema>;
+export type SignInFormDataType = z.infer<typeof signInSchema>;
 export type SignUpFormData = z.infer<typeof signUpSchema>;
 export type ForgetFormData = z.infer<typeof forgetSchema>;
 export type restPasswordFormData = z.infer<typeof restPasswordSchema>;

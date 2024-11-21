@@ -1,19 +1,33 @@
-import { GoogleLogin } from '@react-oauth/google';
-import { useNavigate } from 'react-router-dom';
-import { useRef } from 'react'
+import { GoogleLogin } from "@react-oauth/google";
+import { useRef } from "react";
 import { notification } from "@/utils/notification";
 import { FETCH_AUTH } from "@/services/api/auth";
 import { FcGoogle } from "react-icons/fc";
+// 自定義hook
+import { useSignInHandler } from "@/hooks/auth/useSignIn";
 
 const GoogleLoginButton = () => {
-  const navigate = useNavigate();
   const buttonRef = useRef<HTMLDivElement>(null);
+  const { handelSignInSucess, handleSignInError } = useSignInHandler();
 
   const handleCustomButtonClick = () => {
     // 程式觸發隱藏的 Google 按鈕點擊
     const googleButton = buttonRef.current?.querySelector('div[role="button"]');
     if (googleButton) {
       (googleButton as HTMLElement).click();
+    }
+  };
+
+  const handleSucess = async (credential: string) => {
+    try {
+      if (credential) {
+        const resp = await FETCH_AUTH.GoogleLogin({
+          token: credential,
+        });
+        handelSignInSucess(resp);
+      }
+    } catch (err: unknown) {
+      handleSignInError(err);
     }
   };
 
@@ -24,28 +38,13 @@ const GoogleLoginButton = () => {
         <GoogleLogin
           onSuccess={(credentialResponse) => {
             if (credentialResponse.credential) {
-              FETCH_AUTH.GoogleLogin({
-                token: credentialResponse.credential
-              })
-                .then((response) => {
-                  notification.success({
-                    title: "Google 登入成功",
-                  });
-                  localStorage.setItem('accessToken', response.accessToken);
-                  navigate('/');
-                })
-                .catch((error) => {
-                  notification.error({
-                    title: "Google 登入失敗",
-                    text: error instanceof Error ? error.message : '登入失敗'
-                  });
-                });
+              handleSucess(credentialResponse.credential);
             }
           }}
           onError={() => {
             notification.error({
               title: "Google 登入失敗",
-              text: "請稍後再試"
+              text: "請稍後再試",
             });
           }}
           useOneTap={false}
