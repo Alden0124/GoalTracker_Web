@@ -14,7 +14,6 @@ import { selectIsAuthenticated, signOut } from "@/stores/slice/userReducer";
 // api
 import { FETCH_AUTH } from "@/services/api/auth";
 // utils
-import { handleError } from "@/utils/errorHandler";
 import { handleSuccess } from "@/utils/sucessHandler";
 
 const Header = () => {
@@ -26,12 +25,13 @@ const Header = () => {
 
   const handleSignOut = async () => {
     try {
-      const resp = await FETCH_AUTH.signOut();
-      handleSuccess(resp, "登出成功");
+      await FETCH_AUTH.signOut();
+      handleSuccess(null, "登出成功");
+    } catch (error) {
+      console.error('Logout API failed:', error);
+    } finally {
       dispatch(signOut());
       navigate("/auth/signIn");
-    } catch (error) {
-      handleError(error, "登出失敗");
     }
   };
 

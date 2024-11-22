@@ -16,7 +16,7 @@ const DEFAULT_OPTIONS: CookieOptions = {
   path: "/",
   secure: true, // 使用 HTTPS 時必須為 true
   sameSite: "none", // 跨域請求需要設置為 none
-  domain: isProd ? ".onrender.com" : undefined, // 生產環境設置共享域名
+  domain: isProd ? "onrender.com" : undefined, // 修改為主域名
 };
 
 // 設定cookie
