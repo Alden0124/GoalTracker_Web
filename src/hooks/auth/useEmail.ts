@@ -11,7 +11,7 @@ export const useEmail = () => {
     async (email: string) => {
       try {
         const resp = await FETCH_AUTH["send-verification-code"]({ email });
-        navigate(`/verifyCode?email=${email}`);
+        navigate(`/auth/verifyCode?email=${email}`);
         notification.success({ title: "發送成功", text: resp.message });
       } catch (error: unknown) {
         const redirectPath = handleError(error, "驗證碼發送失敗");
@@ -29,7 +29,7 @@ export const useEmail = () => {
           title: "驗證成功",
           text: "請再次登入",
         });
-        navigate("/signIn");
+        navigate("/auth/signIn");
       } catch (error: unknown) {
         const redirectPath = handleError(error, "驗證失敗");
         if (redirectPath) navigate(redirectPath);

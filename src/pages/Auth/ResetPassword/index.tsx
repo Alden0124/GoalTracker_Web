@@ -36,7 +36,7 @@ const ResetPassword = () => {
         title: "錯誤",
         text: "缺少必要的 email 參數",
       });
-      navigate("/signIn");
+      navigate("/auth/signIn");
     }
   }, [email, navigate]);
 
@@ -53,7 +53,7 @@ const ResetPassword = () => {
         title: "重設密碼成功",
         text: resp.message,
       });
-      navigate("/signIn");
+      navigate("/auth/signIn");
     } catch (error: unknown) {
       handleError(error, "密碼變更失敗");
     }

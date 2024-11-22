@@ -133,7 +133,7 @@ const SignIn = () => {
           <LineLoginButton />
 
           <Link
-            to={"/forget"}
+            to={"/auth/forget"}
             className={`block text-center text-[blue]/60 dark:text-[#58c4dc]`}
           >
             忘記密碼?
@@ -145,7 +145,7 @@ const SignIn = () => {
             >
               還沒有帳號?
               <Link
-                to={"/signUp"}
+                to={"/auth/signUp"}
                 className={`pl-[4px] text-[blue]/60 dark:text-[#58c4dc]`}
               >
                 立即註冊

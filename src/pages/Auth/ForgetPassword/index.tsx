@@ -34,7 +34,7 @@ const Forget = () => {
         title: "成功",
         text: resp.message,
       });
-      navigate(`/resetPassword/?email=${email}`);
+      navigate(`/auth/resetPassword/?email=${email}`);
     } catch (err: unknown) {
       handleError(err, "錯誤");
     }
@@ -87,7 +87,7 @@ const Forget = () => {
 
         <div>
           <Link
-            to={"/signIn"}
+            to={"/auth/signIn"}
             className="group text-center text-foreground-light/50 dark:text-foreground-dark hover:text-gray-700 dark:hover:text-gray-300 flex items-center justify-center gap-2"
           >
             <FaArrowLeft

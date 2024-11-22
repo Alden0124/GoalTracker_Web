@@ -6,3 +6,7 @@ export interface ApiError {
     needVerification?: boolean;
   };
 }
+
+export interface ApiSuccess {
+  message: string;
+}

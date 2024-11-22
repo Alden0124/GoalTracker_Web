@@ -30,6 +30,7 @@ const SignUp = () => {
     try {
       const result = await FETCH_AUTH.SignUp({
         email: data.email,
+        username: data.username,
         password: data.password,
       });
       if (result) {
@@ -40,8 +41,7 @@ const SignUp = () => {
         await handleSendVerificationCode(data.email);
       }
     } catch (err: unknown) {
-      handleError(err, '註冊失敗')
-     
+      handleError(err, "註冊失敗");
     }
   };
 
@@ -67,6 +67,15 @@ const SignUp = () => {
         className="w-full max-w-sm mt-8 space-y-4 px-4"
         noValidate
       >
+        <Input
+          {...register("username")}
+          id="username"
+          type="text"
+          label="用戶名稱"
+          placeholder="請輸入用戶名稱"
+          error={errors.username?.message}
+        />
+
         <Input
           {...register("email")}
           id="email"
@@ -117,7 +126,7 @@ const SignUp = () => {
           >
             已經有帳號?
             <Link
-              to={"/signIn"}
+              to={"/auth/signIn"}
               className={`pl-[4px] text-[blue]/60 dark:text-[#58c4dc]`}
             >
               登入

@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 // icon
 import { AiOutlineGlobal } from "react-icons/ai";
 import { CiDark } from "react-icons/ci";
@@ -7,10 +8,32 @@ import { useTranslation } from "react-i18next";
 // 自訂一hook
 import { useTheme } from "@/hooks/style/useTheme";
 import { Link } from "react-router-dom";
+// redux
+import { useAppSelector, useAppDispatch } from "@/hooks/common/useAppReduxs";
+import { selectIsAuthenticated, signOut } from "@/stores/slice/userReducer";
+// api
+import { FETCH_AUTH } from "@/services/api/auth";
+// utils
+import { handleError } from "@/utils/errorHandler";
+import { handleSuccess } from "@/utils/sucessHandler";
 
 const Header = () => {
   const { t, i18n } = useTranslation();
   const { theme, setTheme } = useTheme();
+  const isLogin = useAppSelector(selectIsAuthenticated);
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const handleSignOut = async () => {
+    try {
+      const resp = await FETCH_AUTH.signOut();
+      handleSuccess(resp, "登出成功");
+      dispatch(signOut());
+      navigate("/auth/signIn");
+    } catch (error) {
+      handleError(error, "登出失敗");
+    }
+  };
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -48,9 +71,15 @@ const Header = () => {
         >
           {theme === "dark" ? <IoSunnyOutline /> : <CiDark />}
         </button>
-        <Link to={"/signIn"} className={`btn-primary ml-[15px]`}>
-          {t("login")}
-        </Link>
+        {isLogin ? (
+          <button onClick={handleSignOut} className={`btn-primary ml-[15px]`}>
+            {t("logout")}
+          </button>
+        ) : (
+          <Link to={"/auth/signIn"} className={`btn-primary ml-[15px]`}>
+            {t("login")}
+          </Link>
+        )}
       </div>
     </header>
   );

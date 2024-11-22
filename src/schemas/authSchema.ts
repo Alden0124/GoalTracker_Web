@@ -9,6 +9,11 @@ const formRules = {
     .max(12, "密碼不能超過12個字元")
     .regex(/[A-Z]/, "密碼必須包含至少一個大寫字母")
     .regex(/[a-z]/, "密碼必須包含至少一個小寫字母"),
+  username: z
+    .string()
+    .min(2, "用戶名稱至少需要2個字元")
+    .max(20, "用戶名稱不能超過20個字元")
+    .regex(/^[a-zA-Z0-9_\u4e00-\u9fa5]+$/, "用戶名稱只能包含中文、英文、數字和底線"),
 } as const;
 
 // 登入表單驗證
@@ -21,6 +26,7 @@ export const signInSchema = z.object({
 export const signUpSchema = z
   .object({
     email: formRules.email,
+    username: formRules.username,
     password: formRules.Password,
     confirmPassword: z.string().min(1, "請確認密碼"),
   })

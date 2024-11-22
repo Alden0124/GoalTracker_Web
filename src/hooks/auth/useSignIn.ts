@@ -23,7 +23,6 @@ export const useSignInHandler = () => {
 
   const handelSignInSucess = useCallback(
     (response: SignInResponse) => {
-      console.log(response);
       const { message, accessToken, user } = response;
       const { id, email, avatar, isEmailVerified, providers = [] } = user;
       // 1. 保存cookie
@@ -67,7 +66,7 @@ export const useSignInHandler = () => {
           title: "登入失敗",
           text: errorMessage,
         });
-        navigate("/signIn");
+        navigate("/auth/signIn");
       }
     },
     [handleSendVerificationCode, navigate]
