@@ -15,7 +15,7 @@ const DEFAULT_OPTIONS: CookieOptions = {
   secure: isProd,
   sameSite: "none",  // 統一使用 'none' 以支援跨域
   expires: 7,  // 7天
-  domain: isProd ? 'goaltracker-admin.onrender.com' : undefined  // 使用完整域名
+  domain: isProd ? 'goaltracker-web.onrender.com' : undefined  // 使用完整域名
 };
 export function SET_COOKIE(value: string) {
   try {
