@@ -9,10 +9,10 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["node", "vite"],
+    "types": ["node"],
 
     /* Bundler mode */
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -24,8 +24,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "composite": true,
-    "esModuleInterop": true
+    "composite": true
   },
   "include": ["src", ".env-config.ts", "vite-env.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }],
