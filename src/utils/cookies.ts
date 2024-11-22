@@ -8,8 +8,7 @@ interface CookieOptions {
   sameSite?: "strict" | "lax" | "none";
 }
 
-
-const isProd = import.meta.env.NODE_ENV === 'production';
+const isProd = window.location.hostname !== "localhost";
 
 const DEFAULT_OPTIONS: CookieOptions = {
   path: "/",
