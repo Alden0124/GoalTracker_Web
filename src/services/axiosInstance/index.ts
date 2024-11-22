@@ -21,14 +21,15 @@ const instance = axios.create({
 // 請求攔截器
 instance.interceptors.request.use(
   (req) => {
-    // 從 cookit 獲取 token
     const token = GET_COOKIE() || false;
     if (token) {
       req.headers.Authorization = `Bearer ${token}`;
+      console.log('發送請求時的 token:', token);
     }
     return req;
   },
   (error) => {
+    console.error('請求攔截器錯誤:', error);
     return Promise.reject(error);
   }
 );
