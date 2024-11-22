@@ -26,7 +26,7 @@ const ErrorPage = () => {
   }
 
   const handleBackHome = () => {
-    navigate("/");
+    navigate("/home");
   };
 
   return (

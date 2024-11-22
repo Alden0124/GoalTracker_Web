@@ -18,7 +18,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 // redux
 import { useAppSelector } from "@/hooks/common/useAppReduxs";
 import { selectUser } from "@/stores/slice/userReducer";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const SignIn = () => {
   const [searchParam] = useSearchParams();
@@ -27,6 +27,7 @@ const SignIn = () => {
   console.log(user);
 
   const code = searchParam.get("code");
+  const isLineLoginProcessed = useRef(false);
 
   const {
     register,
@@ -39,9 +40,10 @@ const SignIn = () => {
 
   useEffect(() => {
     // line登入
-    if (code) {
+    if (code && !isLineLoginProcessed.current) {
       const handleLineLogin = async () => {
         try {
+          isLineLoginProcessed.current = true;
           const resp = await FETCH_AUTH.LineLogin({ code });
           handelSignInSucess(resp);
         } catch (err: unknown) {

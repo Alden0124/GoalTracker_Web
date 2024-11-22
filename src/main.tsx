@@ -1,11 +1,31 @@
-// import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import '@/assets/style/index.css'
-import App from './App.tsx'
-import './plugin/i18n.ts'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { Provider } from "react-redux";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { I18nextProvider } from "react-i18next";
+import { store } from "@/stores";
+import i18n from "@/plugin/i18n";
+import App from "./App";
+import "@/assets/style/index.css";
 
-createRoot(document.getElementById('root')!).render(
-  // <StrictMode>
-    <App />
-  // </StrictMode>,
-)
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+      staleTime: 1000 * 60 * 5,
+    },
+  },
+});
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <React.StrictMode>
+    <I18nextProvider i18n={i18n}>
+      <Provider store={store}>
+        <QueryClientProvider client={queryClient}>
+          <App />
+        </QueryClientProvider>
+      </Provider>
+    </I18nextProvider>
+  </React.StrictMode>
+);

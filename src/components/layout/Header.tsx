@@ -40,8 +40,9 @@ const Header = () => {
   };
 
   const toggleLanguage = () => {
-    const newLang = i18n.language === "en" ? "zh" : "en";
+    const newLang = i18n.language === "en-US" ? "zh-TW" : "en-US";
     i18n.changeLanguage(newLang);
+    localStorage.setItem("language", newLang);
   };
 
   return (
@@ -62,8 +63,10 @@ const Header = () => {
         <button
           onClick={toggleLanguage}
           className="flex w-12 h-12 rounded-full items-center justify-center hover:opacity-80 dark:hover:bg-foreground-darkHover"
+          aria-label={t("changeLanguage")}
         >
           <AiOutlineGlobal />
+          <span className="sr-only">{i18n.language === "zh-TW" ? "EN" : "中"}</span>
         </button>
         <button
           onClick={toggleTheme}

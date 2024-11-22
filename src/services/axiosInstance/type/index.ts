@@ -10,3 +10,5 @@ export interface ApiError {
 export interface ApiSuccess {
   message: string;
 }
+
+
