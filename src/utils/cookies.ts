@@ -8,13 +8,15 @@ interface CookieOptions {
   sameSite?: "strict" | "lax" | "none";
 }
 
-const isProd = window.location.hostname !== "localhost";
+
+const isProd = process.env.NODE_ENV === 'production';
 
 const DEFAULT_OPTIONS: CookieOptions = {
   path: "/",
   secure: isProd,
-  sameSite: 'none',
-  expires: 7
+  sameSite: isProd ? 'none' : 'lax',
+  expires: 7,  // 7天
+  domain: isProd ? '.onrender.com' : undefined  // 生產環境使用 .onrender.com
 };
 
 export function SET_COOKIE(value: string) {
