@@ -13,9 +13,10 @@ const baseURL = isProd
 const instance = axios.create({
   baseURL,
   timeout: 15000,
-  withCredentials: true, // 保持不變，這很重要
+  withCredentials: true, // 確保跨域請求時攜帶 cookies
   headers: {
     "Content-Type": "application/json",
+    // 添加其他必要的標頭
     ...(isProd && {
       "Accept": "application/json",
       "X-Requested-With": "XMLHttpRequest"
@@ -29,21 +30,10 @@ instance.interceptors.request.use(
     const token = GET_COOKIE() || false;
     if (token) {
       req.headers.Authorization = `Bearer ${token}`;
+      // 添加調試日誌
+      console.log('Request URL:', req.url);
+      console.log('Request Headers:', req.headers);
     }
-
-    // 添加 CORS 相關配置
-    if (isProd) {
-      req.headers["Access-Control-Allow-Credentials"] = "true";
-      req.headers["Access-Control-Allow-Origin"] = "https://goaltracker-admin.onrender.com";
-    }
-
-    // 調試日誌
-    console.log('Request Config:', {
-      url: req.url,
-      headers: req.headers,
-      withCredentials: req.withCredentials
-    });
-
     return req;
   },
   (error) => {
@@ -55,58 +45,27 @@ instance.interceptors.request.use(
 // 響應攔截器
 instance.interceptors.response.use(
   (response) => {
-    // 調試日誌
-    console.log('Response Info:', {
-      status: response.status,
-      headers: response.headers,
-      cookies: document.cookie
-    });
-
-    // 檢查是否有新的 refreshToken
-    const cookies = document.cookie.split(';');
-    const refreshTokenCookie = cookies.find(cookie => 
-      cookie.trim().startsWith('refreshToken=')
-    );
-    
-    if (refreshTokenCookie) {
-      console.log('Found refreshToken in cookies');
-    }
-
+    // 添加響應調試日誌
+    console.log('Response Headers:', response.headers);
+    console.log('Response Cookies:', document.cookie);
     return response.data;
   },
-  async (error) => {
+  (error) => {
     if (error.response) {
-      console.error('Error Response:', {
+      console.error('完整錯誤信息:', {
         status: error.response.status,
         headers: error.response.headers,
         data: error.response.data
       });
-
-      // 處理 401 錯誤
-      if (error.response.status === 401) {
-        if (error.response.data?.expired) {
-          try {
-            // 嘗試刷新 token
-            const response = await instance.post('/auth/refresh-token');
-            if (response.data?.accessToken) {
-              // 更新 token 並重試原請求
-              const originalRequest = error.config;
-              originalRequest.headers.Authorization = 
-                `Bearer ${response.data.accessToken}`;
-              return instance(originalRequest);
-            }
-          } catch (refreshError) {
-            console.error('Token 刷新失敗:', refreshError);
-            REMOVE_COOKIE();
-            // 可以添加重定向到登入頁面的邏輯
-          }
-        } else {
+      
+      switch (error.response.status) {
+        case 401:
           REMOVE_COOKIE();
-          // 可以添加重定向到登入頁面的邏輯
-        }
+          // 可以添加重定向邏輯
+          break;
+        // ... 其他錯誤處理 ...
       }
     }
-
     return Promise.reject<ApiError>({
       respData: error.response?.data,
       errorMessage: error.response?.data?.message,
