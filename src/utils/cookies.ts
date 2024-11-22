@@ -13,11 +13,10 @@ const isProd = window.location.hostname !== "localhost";
 const DEFAULT_OPTIONS: CookieOptions = {
   path: "/",
   secure: isProd,
-  sameSite: isProd ? 'none' : 'lax',
+  sameSite: "none",  // 統一使用 'none' 以支援跨域
   expires: 7,  // 7天
-  domain: isProd ? '.onrender.com' : undefined  // 生產環境使用 .onrender.com
+  domain: isProd ? 'goaltracker-admin.onrender.com' : undefined  // 使用完整域名
 };
-
 export function SET_COOKIE(value: string) {
   try {
     // 先清除可能存在的舊 cookie
