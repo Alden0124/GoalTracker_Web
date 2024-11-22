@@ -13,7 +13,7 @@ const isProd = window.location.hostname !== "localhost";
 const DEFAULT_OPTIONS: CookieOptions = {
   path: "/",
   secure: isProd,
-  sameSite: isProd ? "lax" : "strict",
+  sameSite: 'none',
   expires: 7
 };
 
