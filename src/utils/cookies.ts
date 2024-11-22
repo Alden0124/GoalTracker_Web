@@ -12,19 +12,25 @@ const isProd = window.location.hostname !== "localhost";
 
 const DEFAULT_OPTIONS: CookieOptions = {
   path: "/",
-  secure: isProd,
-  sameSite: "none",  // 統一使用 'none' 以支援跨域
-  expires: 7,  // 7天
-  domain: isProd ? 'goaltracker-web.onrender.com' : undefined  // 使用完整域名
+  secure: true,
+  sameSite: "lax",
+  expires: 7,
 };
 export function SET_COOKIE(value: string) {
   try {
-    // 先清除可能存在的舊 cookie
+    // 根據環境決定使用的選項
+    const options = {
+      ...DEFAULT_OPTIONS,
+      // 如果需要跨域，則使用這些設置
+      ...(isProd && {
+        secure: true,
+        sameSite: 'none'
+      })
+    };
+
     REMOVE_COOKIE();
-    
-    // 設置新的 cookie，添加調試信息
-    console.log('準備設置 cookie，選項：', DEFAULT_OPTIONS);
-    Cookies.set("GT_ACCESS_TOKEN", value, DEFAULT_OPTIONS);
+    console.log('準備設置 cookie，選項：', options);
+    Cookies.set("GT_ACCESS_TOKEN", value, options);
     
     // 驗證是否設置成功
     const savedCookie = Cookies.get("GT_ACCESS_TOKEN");
