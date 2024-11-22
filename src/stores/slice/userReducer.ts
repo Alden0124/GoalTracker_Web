@@ -1,3 +1,4 @@
+import { REMOVE_COOKIE } from "@/utils/cookies";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 // 定義用戶資料介面
@@ -37,14 +38,23 @@ const userSlice = createSlice({
       state.userInfo = userInfo;
       state.isAuthenticated = true;
     },
+    // 登出
+    signOut: (state) => {
+      state.accessToken = "";
+      state.userInfo = initialState.userInfo;
+      state.isAuthenticated = false;
+      REMOVE_COOKIE();
+    },
   },
 });
 
 // 導出 actions
-export const { setUserInfo } = userSlice.actions;
+export const { setUserInfo, signOut } = userSlice.actions;
 
 // 導出 reducer
 export default userSlice.reducer;
 
 // 選擇器（Selectors）
 export const selectUser = (state: { user: UserInfo }) => state.user.userInfo;
+export const selectIsAuthenticated = (state: { user: UserInfo }) =>
+  state.user.isAuthenticated;

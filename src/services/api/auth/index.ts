@@ -21,8 +21,7 @@ export const FETCH_AUTH = {
    */
   SignUp: (data: object) => axiosInstance.post("/auth/signUp", data),
 
-  signOut: (data: object): Promise<AuthResponse> =>
-    axiosInstance.post("/auth/signout", data),
+  signOut: (): Promise<AuthResponse> => axiosInstance.post("/auth/signout"),
 
   GoogleLogin: (data: { token: string }): Promise<SignInResponse> =>
     axiosInstance.post("/auth/signIn/google", data),

@@ -28,7 +28,7 @@ const VerifyCode = () => {
         title: "錯誤",
         text: "缺少必要的 email 參數",
       });
-      navigate("/signIn");
+      navigate("/auth/signIn");
     }
   }, [email, navigate]);
 

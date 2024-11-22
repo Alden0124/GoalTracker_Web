@@ -18,7 +18,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 // redux
 import { useAppSelector } from "@/hooks/common/useAppReduxs";
 import { selectUser } from "@/stores/slice/userReducer";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 const SignIn = () => {
   const [searchParam] = useSearchParams();
@@ -27,6 +27,7 @@ const SignIn = () => {
   console.log(user);
 
   const code = searchParam.get("code");
+  const isLineLoginProcessed = useRef(false);
 
   const {
     register,
@@ -39,9 +40,10 @@ const SignIn = () => {
 
   useEffect(() => {
     // line登入
-    if (code) {
+    if (code && !isLineLoginProcessed.current) {
       const handleLineLogin = async () => {
         try {
+          isLineLoginProcessed.current = true;
           const resp = await FETCH_AUTH.LineLogin({ code });
           handelSignInSucess(resp);
         } catch (err: unknown) {
@@ -133,7 +135,7 @@ const SignIn = () => {
           <LineLoginButton />
 
           <Link
-            to={"/forget"}
+            to={"/auth/forget"}
             className={`block text-center text-[blue]/60 dark:text-[#58c4dc]`}
           >
             忘記密碼?
@@ -145,7 +147,7 @@ const SignIn = () => {
             >
               還沒有帳號?
               <Link
-                to={"/signUp"}
+                to={"/auth/signUp"}
                 className={`pl-[4px] text-[blue]/60 dark:text-[#58c4dc]`}
               >
                 立即註冊

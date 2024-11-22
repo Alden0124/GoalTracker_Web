@@ -1,7 +1,11 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Suspense, lazy } from "react";
 
+// 延遲載入組件
+const ProtectedRoute = lazy(() => import("@/router/ProtectedRoute"));
 const DefaultLayout = lazy(() => import("@/layout/DefaultLayout"));
+const AuthLayout = lazy(() => import("@/layout/AuthLayout"));
+const ErrorPage = lazy(() => import("@/pages/Error"));
 const Home = lazy(() => import("@/pages/Home"));
 const SignIn = lazy(() => import("@/pages/Auth/SignIn"));
 const SignUp = lazy(() => import("@/pages/Auth/SignUp"));
@@ -9,71 +13,104 @@ const Forget = lazy(() => import("@/pages/Auth/ForgetPassword"));
 const SendCode = lazy(() => import("@/pages/Auth/SendCode"));
 const VerifyCode = lazy(() => import("@/pages/Auth/VerifyCode"));
 const ResetPassword = lazy(() => import("@/pages/Auth/ResetPassword"));
+const NotFoundPage = lazy(() => import("@/pages/NotFound"));
 
 const routes = [
+  {
+    path: "*",
+    element: (
+      <Suspense fallback={<div className="h-screen"></div>}>
+        <NotFoundPage />
+      </Suspense>
+    ),
+    errorElement: <ErrorPage />,
+  },
   {
     path: "/",
     element: (
       <Suspense fallback={<div className="h-screen"></div>}>
-        <DefaultLayout />
+        <ProtectedRoute />
       </Suspense>
     ),
+    errorElement: <ErrorPage />,
     children: [
       {
-        path: "/home",
+        path: "/",
         element: (
           <Suspense fallback={<div className="h-screen"></div>}>
-            <Home />
+            <DefaultLayout />
           </Suspense>
         ),
+        children: [
+          {
+            path: "/home",
+            element: (
+              <Suspense fallback={<div className="h-screen"></div>}>
+                <Home />
+              </Suspense>
+            ),
+          },
+          // ... 其他需要登入的頁面
+        ],
       },
+      // AuthLayout (不需要登入的頁面)
       {
-        path: "/signIn",
+        path: "/auth",
         element: (
           <Suspense fallback={<div className="h-screen"></div>}>
-            <SignIn />
+            <AuthLayout />
           </Suspense>
         ),
-      },
-      {
-        path: "/signUp",
-        element: (
-          <Suspense fallback={<div className="h-screen"></div>}>
-            <SignUp />
-          </Suspense>
-        ),
-      },
-      {
-        path: "/forget",
-        element: (
-          <Suspense fallback={<div className="h-screen"></div>}>
-            <Forget />
-          </Suspense>
-        ),
-      },
-      {
-        path: "/sendCode",
-        element: (
-          <Suspense fallback={<div className="h-screen"></div>}>
-            <SendCode />
-          </Suspense>
-        ),
-      },
-      {
-        path: "/verifyCode",
-        element: (
-          <Suspense fallback={<div className="h-screen"></div>}>
-            <VerifyCode />
-          </Suspense>
-        ),
-      },
-      {
-        path: "/resetPassword",
-        element: (
-          <Suspense fallback={<div className="h-screen"></div>}>
-            <ResetPassword />
-          </Suspense>
-        ),
+        children: [
+          {
+            path: "signIn",
+            element: (
+              <Suspense fallback={<div className="h-screen"></div>}>
+                <SignIn />
+              </Suspense>
+            ),
+          },
+          {
+            path: "signUp",
+            element: (
+              <Suspense fallback={<div className="h-screen"></div>}>
+                <SignUp />
+              </Suspense>
+            ),
+          },
+          {
+            path: "forget",
+            element: (
+              <Suspense fallback={<div className="h-screen"></div>}>
+                <Forget />
+              </Suspense>
+            ),
+          },
+          {
+            path: "sendCode",
+            element: (
+              <Suspense fallback={<div className="h-screen"></div>}>
+                <SendCode />
+              </Suspense>
+            ),
+          },
+          {
+            path: "verifyCode",
+            element: (
+              <Suspense fallback={<div className="h-screen"></div>}>
+                <VerifyCode />
+              </Suspense>
+            ),
+          },
+          {
+            path: "resetPassword",
+            element: (
+              <Suspense fallback={<div className="h-screen"></div>}>
+                <ResetPassword />
+              </Suspense>
+            ),
+          },
+        ],
       },
     ],
   },
