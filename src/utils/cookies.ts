@@ -1,11 +1,13 @@
 import Cookies from "js-cookie";
 
+type SameSiteType = 'strict' | 'lax' | 'none' | undefined;
+
 interface CookieOptions {
   expires?: number | Date;
   path?: string;
   domain?: string;
   secure?: boolean;
-  sameSite?: "strict" | "lax" | "none";
+  sameSite?: SameSiteType;
 }
 
 const isProd = window.location.hostname !== "localhost";
@@ -13,25 +15,23 @@ const isProd = window.location.hostname !== "localhost";
 const DEFAULT_OPTIONS: CookieOptions = {
   path: "/",
   secure: true,
-  sameSite: "lax",
+  sameSite: 'lax' as SameSiteType,
   expires: 7,
 };
 export function SET_COOKIE(value: string) {
   try {
-    // 根據環境決定使用的選項
-    const options = {
+    const options: CookieOptions = {
       ...DEFAULT_OPTIONS,
-      // 如果需要跨域，則使用這些設置
-      ...(isProd && {
+      ...(isProd ? {
         secure: true,
-        sameSite: 'none'
-      })
+        sameSite: 'none' as SameSiteType
+      } : {})
     };
 
     REMOVE_COOKIE();
-    console.log('準備設置 cookie，選項：', options);
+    console.log("準備設置 cookie，選項：", options);
     Cookies.set("GT_ACCESS_TOKEN", value, options);
-    
+
     // 驗證是否設置成功
     const savedCookie = Cookies.get("GT_ACCESS_TOKEN");
     if (!savedCookie) {
