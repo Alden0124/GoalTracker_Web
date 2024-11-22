@@ -9,7 +9,7 @@ interface CookieOptions {
 }
 
 
-const isProd = process.env.NODE_ENV === 'production';
+const isProd = import.meta.env.NODE_ENV === 'production';
 
 const DEFAULT_OPTIONS: CookieOptions = {
   path: "/",
