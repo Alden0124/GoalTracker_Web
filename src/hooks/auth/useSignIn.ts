@@ -42,7 +42,7 @@ export const useSignInHandler = () => {
       });
 
       // 4. 導航到指定頁面
-      navigate("/home");
+      navigate("/");
     },
     [dispatch, navigate]
   );

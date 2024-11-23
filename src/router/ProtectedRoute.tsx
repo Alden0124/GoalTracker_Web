@@ -15,7 +15,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const location = useLocation();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const { isError } = useUserProfile();
-  
+
   useEffect(() => {
     const publicPaths = [
       "/auth/signIn",
@@ -24,13 +24,11 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
       "/auth/sendCode",
       "/auth/verifyCode",
       "/auth/resetPassword",
-      "/home",
+      "/",
     ];
 
-    const isPublicPath = publicPaths.some((path) =>
-      location.pathname.startsWith(path)
-    );
-
+    const isPublicPath = publicPaths.some((path) => location.pathname === path);
+    console.log(isPublicPath);
     const token = GET_COOKIE();
 
     // 有 token 但獲取用戶資料失敗
@@ -45,7 +43,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
     // 已登入但訪問 auth 路徑
     if (isAuthenticated && location.pathname.startsWith("/auth")) {
-      navigate("/home", { replace: true });
+      navigate("/", { replace: true });
       return;
     }
 

@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 // icon
 import { AiOutlineGlobal } from "react-icons/ai";
 import { CiDark } from "react-icons/ci";
@@ -9,31 +8,16 @@ import { useTranslation } from "react-i18next";
 import { useTheme } from "@/hooks/style/useTheme";
 import { Link } from "react-router-dom";
 // redux
-import { useAppSelector, useAppDispatch } from "@/hooks/common/useAppReduxs";
-import { selectIsAuthenticated, signOut } from "@/stores/slice/userReducer";
-// api
-import { FETCH_AUTH } from "@/services/api/auth";
+import { useAppSelector } from "@/hooks/common/useAppReduxs";
+import { selectIsAuthenticated } from "@/stores/slice/userReducer";
 // utils
-import { handleSuccess } from "@/utils/sucessHandler";
+import UserMenu from "@/components/layout/Header/components/UserMenu";
 
 const Header = () => {
+  const isLogin = useAppSelector(selectIsAuthenticated);
   const { t, i18n } = useTranslation();
   const { theme, setTheme } = useTheme();
-  const isLogin = useAppSelector(selectIsAuthenticated);
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-
-  const handleSignOut = async () => {
-    try {
-      await FETCH_AUTH.signOut();
-      handleSuccess(null, "登出成功");
-    } catch (error) {
-      console.error('Logout API failed:', error);
-    } finally {
-      dispatch(signOut());
-      navigate("/auth/signIn");
-    }
-  };
+ 
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -58,7 +42,7 @@ const Header = () => {
         text-foreground-light dark:text-foreground-dark
       `}
     >
-      <p className="text-[18px]">GoalTracker</p>
+      <Link to={'/'} className="text-[18px]">GoalTracker</Link>
       <div className="flex items-center text-[16px] gap-[10px]">
         <button
           onClick={toggleLanguage}
@@ -66,18 +50,20 @@ const Header = () => {
           aria-label={t("changeLanguage")}
         >
           <AiOutlineGlobal />
-          <span className="sr-only">{i18n.language === "zh-TW" ? "EN" : "中"}</span>
+          <span className="sr-only">
+            {i18n.language === "zh-TW" ? "EN" : "中"}
+          </span>
         </button>
+
         <button
           onClick={toggleTheme}
-          className=" flex md:w-12 md:h-12 rounded-full items-center justify-center hover:opacity-80 dark:hover:bg-foreground-darkHover"
+          className="flex md:w-12 md:h-12 rounded-full items-center justify-center hover:opacity-80 dark:hover:bg-foreground-darkHover"
         >
           {theme === "dark" ? <IoSunnyOutline /> : <CiDark />}
         </button>
+
         {isLogin ? (
-          <button onClick={handleSignOut} className={`btn-primary ml-[15px]`}>
-            {t("logout")}
-          </button>
+          <UserMenu />
         ) : (
           <Link to={"/auth/signIn"} className={`btn-primary ml-[15px]`}>
             {t("login")}

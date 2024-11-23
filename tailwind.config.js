@@ -10,6 +10,8 @@ export default {
         background: {
           light: "#ffffff",
           dark: "#23272F",
+          secondaryLight: "#F3F4F6",
+          secondaryDark: "#111827",
         },
         foreground: {
           light: "#23272F",

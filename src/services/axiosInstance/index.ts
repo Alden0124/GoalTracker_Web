@@ -27,6 +27,13 @@ const instance = axios.create({
 // 請求攔截器
 instance.interceptors.request.use(
   (req) => {
+    // 獲取當前語言
+    const currentLang = localStorage.getItem("language") || "zh-TW";
+    
+    // 設置 Accept-Language header
+    req.headers["Accept-Language"] = currentLang;
+
+    // 設置 token
     const token = GET_COOKIE() || false;
     if (token) {
       req.headers.Authorization = `Bearer ${token}`;

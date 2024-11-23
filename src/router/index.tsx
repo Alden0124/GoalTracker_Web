@@ -14,7 +14,7 @@ const SendCode = lazy(() => import("@/pages/Auth/SendCode"));
 const VerifyCode = lazy(() => import("@/pages/Auth/VerifyCode"));
 const ResetPassword = lazy(() => import("@/pages/Auth/ResetPassword"));
 const NotFoundPage = lazy(() => import("@/pages/NotFound"));
-
+const Profile = lazy(() => import("@/pages/User/Profile"));
 const routes = [
   {
     path: "*",
@@ -43,17 +43,23 @@ const routes = [
         ),
         children: [
           {
-            path: "/home",
+            path: "/",
             element: (
               <Suspense fallback={<div className="h-screen"></div>}>
                 <Home />
               </Suspense>
             ),
           },
-          // ... 其他需要登入的頁面
+          {
+            path: "/profile/:id",
+            element: (
+              <Suspense fallback={<div className="h-screen"></div>}>
+                <Profile />
+              </Suspense>
+            ),
+          },
         ],
       },
-      // AuthLayout (不需要登入的頁面)
       {
         path: "/auth",
         element: (

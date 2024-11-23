@@ -8,6 +8,7 @@ export interface UserInfo {
     id: string;
     email?: string;
     avatar?: string;
+    username?: string;
     isEmailVerified: boolean;
     providers?: Array<"google" | "line">;
   };
@@ -21,6 +22,7 @@ const initialState: UserInfo = {
     id: "",
     email: "",
     avatar: "",
+    username: "",
     isEmailVerified: false,
     providers: [],
   },
@@ -35,8 +37,9 @@ const userSlice = createSlice({
     setUserInfo: (state, action: PayloadAction<UserInfo>) => {
       const { accessToken, userInfo } = action.payload;
       state.accessToken = accessToken;
-      state.userInfo = userInfo;
+      state.userInfo = { ...state.userInfo, ...userInfo };
       state.isAuthenticated = true;
+      console.log(state.userInfo);
     },
     // 登出
     signOut: (state) => {
@@ -55,6 +58,6 @@ export const { setUserInfo, signOut } = userSlice.actions;
 export default userSlice.reducer;
 
 // 選擇器（Selectors）
-export const selectUser = (state: { user: UserInfo }) => state.user.userInfo;
+export const selectUserProFile = (state: { user: UserInfo }) => state.user.userInfo;
 export const selectIsAuthenticated = (state: { user: UserInfo }) =>
   state.user.isAuthenticated;
