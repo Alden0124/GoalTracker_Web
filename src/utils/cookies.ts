@@ -1,35 +1,58 @@
 import Cookies from "js-cookie";
 
+type SameSiteType = 'strict' | 'lax' | 'none' | undefined;
+
 interface CookieOptions {
   expires?: number | Date;
   path?: string;
   domain?: string;
   secure?: boolean;
-  sameSite?: "strict" | "lax" | "none";
+  sameSite?: SameSiteType;
 }
 
-// 環境變數判斷
-const isProd = process.env.NODE_ENV === "production";
+const isProd = window.location.hostname !== "localhost";
 
-// Cookie 預設選項
 const DEFAULT_OPTIONS: CookieOptions = {
   path: "/",
-  secure: true, // 使用 HTTPS 時必須為 true
-  sameSite: "none", // 跨域請求需要設置為 none
-  domain: isProd ? "onrender.com" : undefined, // 修改為主域名
+  secure: true,
+  sameSite: 'lax' as SameSiteType,
+  expires: 7,
 };
-
-// 設定cookie
 export function SET_COOKIE(value: string) {
-  Cookies.set("GT_ACCESS_TOKEN", value, DEFAULT_OPTIONS);
+  try {
+    const options: CookieOptions = {
+      ...DEFAULT_OPTIONS,
+      ...(isProd ? {
+        secure: true,
+        sameSite: 'none' as SameSiteType
+      } : {})
+    };
+
+    REMOVE_COOKIE();
+    console.log("準備設置 cookie，選項：", options);
+    Cookies.set("GT_ACCESS_TOKEN", value, options);
+
+    // 驗證是否設置成功
+    const savedCookie = Cookies.get("GT_ACCESS_TOKEN");
+    if (!savedCookie) {
+      console.warn("Cookie 設置失敗，使用 localStorage 作為備用");
+      localStorage.setItem("GT_ACCESS_TOKEN", value);
+    } else {
+      console.log("Cookie 設置成功:", savedCookie);
+    }
+  } catch (error) {
+    console.error("設置 Cookie 時發生錯誤:", error);
+    localStorage.setItem("GT_ACCESS_TOKEN", value);
+  }
 }
 
 export function GET_COOKIE(key: string = "GT_ACCESS_TOKEN") {
-  return Cookies.get(key);
+  return Cookies.get(key) || localStorage.getItem(key);
 }
 
 export function REMOVE_COOKIE(key: string = "GT_ACCESS_TOKEN") {
   Cookies.remove(key, DEFAULT_OPTIONS);
+  localStorage.removeItem(key);
 }
 
 export function EXISTS_COOKIE(key: string = "GT_ACCESS_TOKEN") {
