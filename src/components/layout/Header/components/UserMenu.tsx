@@ -15,7 +15,7 @@ const UserMenu = () => {
   const location = useLocation(); // 獲取當前路徑
   const [isMenuOpen, setIsMenuOpen] = useState(false); // 控制下拉選單的開關狀態
   const menuRef = useRef<HTMLDivElement>(null); // 用於獲取選單 DOM 元素的引用
-
+  console.log(useProFile);
   // 點擊選單外部時關閉選單的效果
   useEffect(() => {
     // 處理點擊事件的函數

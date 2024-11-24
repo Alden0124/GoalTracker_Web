@@ -1,3 +1,5 @@
+import { Goal } from "@/components/user/profile/type";
+
 export interface UserProfileResponse {
   message: string;
   user: {
@@ -6,5 +8,6 @@ export interface UserProfileResponse {
     avatar?: string;
     isEmailVerified: boolean;
     providers?: Array<'google' | 'line'>;
+    goals?: Goal[];
   };
 }

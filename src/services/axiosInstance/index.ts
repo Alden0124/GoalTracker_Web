@@ -1,4 +1,7 @@
-import axios from "axios";
+import axios, { 
+  InternalAxiosRequestConfig,
+  AxiosHeaders 
+} from "axios";
 import { GET_COOKIE, REMOVE_COOKIE } from "@/utils/cookies";
 import { ApiError } from "./type";
 import { store } from '@/stores';
@@ -15,10 +18,8 @@ const baseURL = isProd
 const instance = axios.create({
   baseURL,
   timeout: 15000,
-  withCredentials: true, // 確保跨域請求時攜帶 cookies
+  withCredentials: true,
   headers: {
-    "Content-Type": "application/json",
-    // 添加其他必要的標頭
     ...(isProd && {
       "Accept": "application/json",
       "X-Requested-With": "XMLHttpRequest"
@@ -49,27 +50,29 @@ const handleStopLoading = () => {
 
 // 請求攔截器
 instance.interceptors.request.use(
-  (req) => {
-    // 可以通過 headers 來控制是否顯示 loading
-    if (req.headers?.['skip-loading'] !== 'true') {
+  (config: InternalAxiosRequestConfig) => {
+    if (config.headers?.['skip-loading'] !== 'true') {
       handleStartLoading();
     }
     
-    // 獲取當前語言
     const currentLang = localStorage.getItem("language") || "zh-TW";
     
-    // 設置 Accept-Language header
-    req.headers["Accept-Language"] = currentLang;
+    if (!(config.headers instanceof AxiosHeaders)) {
+      config.headers = new AxiosHeaders(config.headers);
+    }
 
-    // 設置 token
+    config.headers.set('Accept-Language', currentLang);
+    
+    if (!config.headers.get('Content-Type')) {
+      config.headers.set('Content-Type', 'application/json');
+    }
+    
     const token = GET_COOKIE() || false;
     if (token) {
-      req.headers.Authorization = `Bearer ${token}`;
-      // 添加調試日誌
-      // console.log('Request URL:', req.url);
-      // console.log('Request Headers:', req.headers);
+      config.headers.set('Authorization', `Bearer ${token}`);
     }
-    return req;
+
+    return config;
   },
   (error) => {
     handleStopLoading();
@@ -84,9 +87,6 @@ instance.interceptors.response.use(
     if (response.config.headers?.['skip-loading'] !== 'true') {
       handleStopLoading();
     }
-    // 添加響應調試日誌
-    // console.log('Response Headers:', response.headers);
-    // console.log('Response Cookies:', document.cookie);
     return response.data;
   },
   (error) => {
