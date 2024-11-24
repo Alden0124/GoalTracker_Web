@@ -6,7 +6,7 @@ import { selectIsAuthenticated } from "@/stores/slice/userReducer";
 // alert
 import { notification } from "@/utils/notification";
 // hooks
-import { useUserProfile } from "@/hooks/user/useUserProfile";
+import { useCurrentUser } from "@/hooks/queries/user/useUserQueries";
 // cookies
 import { GET_COOKIE } from "@/utils/cookies";
 
@@ -17,7 +17,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const navigate = useNavigate();
   const location = useLocation();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
-  const { isError, isLoading } = useUserProfile();
+  const { isError, isLoading } = useCurrentUser();
 
   useEffect(() => {
     // 如果正在全局加載中，先不做任何路由判斷
