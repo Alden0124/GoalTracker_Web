@@ -5,7 +5,7 @@ interface DialogProps {
   isOpen: boolean;
   onClose: () => void;
   children: React.ReactNode;
-  title?: string;
+  title: string;
 }
 
 const Dialog = ({ isOpen, onClose, children, title }: DialogProps) => {
@@ -41,10 +41,12 @@ const Dialog = ({ isOpen, onClose, children, title }: DialogProps) => {
           onClick={e => e.stopPropagation()}
         >
           <div className="flex justify-between items-center p-4 border-b dark:border-gray-700">
-            <h2 className="text-lg font-medium">{title}</h2>
+            <h2 className="text-lg font-medium text-foreground-light dark:text-foreground-dark">
+              {title}
+            </h2>
             <button
               onClick={onClose}
-              className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-500 dark:text-gray-400"
             >
               <IoClose className="text-xl" />
             </button>

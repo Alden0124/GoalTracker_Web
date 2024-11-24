@@ -16,15 +16,15 @@ import { useSignInHandler } from "@/hooks/auth/useSignIn";
 // google登入
 import { GoogleOAuthProvider } from "@react-oauth/google";
 // redux
-import { useAppSelector } from "@/hooks/common/useAppReduxs";
-import { selectUserProFile } from "@/stores/slice/userReducer";
+// import { useAppSelector } from "@/hooks/common/useAppReduxs";
+// import { selectUserProFile } from "@/stores/slice/userReducer";
 import { useEffect, useRef } from "react";
 
 const SignIn = () => {
   const [searchParam] = useSearchParams();
   const { handelSignInSucess, handleSignInError } = useSignInHandler();
-  const user = useAppSelector(selectUserProFile);
-  console.log(user);
+  // const user = useAppSelector(selectUserProFile);
+  // console.log(user);
 
   const code = searchParam.get("code");
   const isLineLoginProcessed = useRef(false);

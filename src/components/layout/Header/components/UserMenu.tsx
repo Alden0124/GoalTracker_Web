@@ -47,8 +47,13 @@ const UserMenu = () => {
     }
   };
 
-  // 判斷是否為當前頁面
+  // 修改判斷當前路徑的函數
   const isCurrentPath = (path: string) => {
+    // 如果是 profile 頁面，檢查是否匹配 /profile/ 開頭的路徑
+    if (path === '/profile') {
+      return location.pathname.startsWith('/profile/');
+    }
+    // 其他頁面保持完全匹配
     return location.pathname === path;
   };
 
@@ -102,8 +107,8 @@ const UserMenu = () => {
                 block w-full px-4 py-2 text-sm text-left 
                 hover:bg-gray-100 dark:hover:bg-gray-700
                 ${
-                  isCurrentPath("/user/profile")
-                    ? "text-foreground-lightBlue  bg-gray-50 dark:bg-gray-800"
+                  isCurrentPath('/profile')  // 這裡改為檢查 '/profile'
+                    ? "text-foreground-lightBlue bg-gray-50 dark:bg-gray-800"
                     : "text-foreground-light dark:text-foreground-dark"
                 }
               `}

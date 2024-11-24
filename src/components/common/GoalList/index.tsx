@@ -19,6 +19,7 @@ const GoalList = ({ goals }: GoalListProps) => {
           title={goal.title}
           progress={goal.progress}
           description={goal.description}
+          startDate="2023-05-01"
         />
       ))}
     </div>

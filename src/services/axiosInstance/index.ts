@@ -1,6 +1,8 @@
 import axios from "axios";
 import { GET_COOKIE, REMOVE_COOKIE } from "@/utils/cookies";
 import { ApiError } from "./type";
+import { store } from '@/stores';
+import { startLoading, finishLoading } from '@/stores/slice/loadingReducer';
 
 const isProd = window.location.hostname !== "localhost";
 
@@ -24,9 +26,35 @@ const instance = axios.create({
   }
 });
 
+// 追蹤請求數量
+let pendingRequests = 0;
+
+const handleStartLoading = () => {
+  pendingRequests++;
+  
+  // 如果是第一個請求，才觸發 loading
+  if (pendingRequests === 1) {
+    store.dispatch(startLoading());
+  }
+};
+
+const handleStopLoading = () => {
+  pendingRequests = Math.max(0, pendingRequests - 1);
+  
+  // 只有當所有請求都完成時，才關閉 loading
+  if (pendingRequests === 0) {
+    store.dispatch(finishLoading());
+  }
+};
+
 // 請求攔截器
 instance.interceptors.request.use(
   (req) => {
+    // 可以通過 headers 來控制是否顯示 loading
+    if (req.headers?.['skip-loading'] !== 'true') {
+      handleStartLoading();
+    }
+    
     // 獲取當前語言
     const currentLang = localStorage.getItem("language") || "zh-TW";
     
@@ -38,12 +66,13 @@ instance.interceptors.request.use(
     if (token) {
       req.headers.Authorization = `Bearer ${token}`;
       // 添加調試日誌
-      console.log('Request URL:', req.url);
-      console.log('Request Headers:', req.headers);
+      // console.log('Request URL:', req.url);
+      // console.log('Request Headers:', req.headers);
     }
     return req;
   },
   (error) => {
+    handleStopLoading();
     console.error('請求攔截器錯誤:', error);
     return Promise.reject(error);
   }
@@ -52,12 +81,18 @@ instance.interceptors.request.use(
 // 響應攔截器
 instance.interceptors.response.use(
   (response) => {
+    if (response.config.headers?.['skip-loading'] !== 'true') {
+      handleStopLoading();
+    }
     // 添加響應調試日誌
-    console.log('Response Headers:', response.headers);
-    console.log('Response Cookies:', document.cookie);
+    // console.log('Response Headers:', response.headers);
+    // console.log('Response Cookies:', document.cookie);
     return response.data;
   },
   (error) => {
+    if (error.config?.headers?.['skip-loading'] !== 'true') {
+      handleStopLoading();
+    }
     if (error.response) {
       console.error('完整錯誤信息:', {
         status: error.response.status,

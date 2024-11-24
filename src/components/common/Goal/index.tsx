@@ -1,16 +1,18 @@
 import { useState, useRef, useEffect } from "react";
 import { AiOutlineHeart } from "react-icons/ai";
 import { FaRegComment } from "react-icons/fa";
-import { BsThreeDots } from "react-icons/bs";
+import { BsCalendar3, BsThreeDots } from "react-icons/bs";
 import { IoSend } from "react-icons/io5";
 import Dialog from "../Dialog";
+
 interface GoalProps {
   title: string;
   progress: number;
   description: string;
+  startDate: string;
 }
 
-const Goal = ({ title, description }: GoalProps) => {
+const Goal = ({ title, description, startDate }: GoalProps) => {
   const [activeTab, setActiveTab] = useState<"progress" | "comments">(
     "progress"
   );
@@ -37,7 +39,7 @@ const Goal = ({ title, description }: GoalProps) => {
           className={`flex-1 py-2 text-center rounded-lg ${
             activeTab === "progress"
               ? "bg-blue-500 text-white"
-              : "text-gray-500"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
           }`}
           onClick={() => setActiveTab("progress")}
         >
@@ -47,7 +49,7 @@ const Goal = ({ title, description }: GoalProps) => {
           className={`flex-1 py-2 text-center rounded-lg ${
             activeTab === "comments"
               ? "bg-blue-500 text-white"
-              : "text-gray-500"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
           }`}
           onClick={() => setActiveTab("comments")}
         >
@@ -106,6 +108,10 @@ const Goal = ({ title, description }: GoalProps) => {
               {title}
             </h3>
             <p className="text-sm text-gray-500">{description}</p>
+            <div className="flex items-center gap-1 mt-1">
+              <BsCalendar3 className="text-gray-500 text-sm" />
+              <span className="text-sm text-gray-500">開始時間：{startDate}</span>
+            </div>
           </div>
           <div className="relative" ref={menuRef}>
             <button
@@ -182,6 +188,7 @@ const Goal = ({ title, description }: GoalProps) => {
               <span>1 則留言</span>
             </button>
           </div>
+        
         </div>
       </div>
 

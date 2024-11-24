@@ -54,10 +54,11 @@ const userSlice = createSlice({
 // 導出 actions
 export const { setUserInfo, signOut } = userSlice.actions;
 
-// 導出 reducer
-export default userSlice.reducer;
 
 // 選擇器（Selectors）
 export const selectUserProFile = (state: { user: UserInfo }) => state.user.userInfo;
 export const selectIsAuthenticated = (state: { user: UserInfo }) =>
   state.user.isAuthenticated;
+
+// 導出 reducer
+export default userSlice.reducer;
