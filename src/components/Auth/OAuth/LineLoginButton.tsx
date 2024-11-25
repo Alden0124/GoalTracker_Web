@@ -9,7 +9,7 @@ const LineLoginButton = () => {
         `&client_id=${import.meta.env.VITE_LINE_CLIENT_ID}` +
         `&redirect_uri=${import.meta.env.VITE_LINE_REDIRECT_URI}` +
         "&state=456456456" +
-        "&scope=openid%20profile";
+        "&scope=openid%20profile%20email";
 
       // 重定向用户到 LINE 授權页面
       window.location.href = lineAuthUrl;

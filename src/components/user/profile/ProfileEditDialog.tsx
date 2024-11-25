@@ -37,26 +37,36 @@ const ProfileEditDialog = ({
   });
 
   const onSubmit = handleSubmit(async (data) => {
-    console.log('Form submitted with data:', data);
-
     try {
       const formData = new FormData();
+      
       formData.append("username", data.username);
-      formData.append("location", data.location || "" );
+      formData.append("location", data.location || "");
       formData.append("occupation", data.occupation || "");
       formData.append("education", data.education || "");
 
       if (avatarFile) {
         formData.append("avatar", avatarFile);
+        
+        console.log('Avatar file details:', {
+          name: avatarFile.name,
+          type: avatarFile.type,
+          size: avatarFile.size,
+          lastModified: avatarFile.lastModified
+        });
       }
 
-      console.log('Submitting formData:', Object.fromEntries(formData));
+      for (let [key, value] of formData.entries()) {
+        console.log(`FormData entry - ${key}:`, value);
+      }
       
       await updateProfile.mutateAsync(formData);
-      console.log('Update successful');
       onClose();
     } catch (error) {
-      console.error('Form submit error:', error);
+      console.error('上傳失敗:', error);
+      if (error instanceof Error) {
+        console.error('錯誤詳情:', error.message);
+      }
     }
   });
 

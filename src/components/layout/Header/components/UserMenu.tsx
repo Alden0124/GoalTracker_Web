@@ -37,12 +37,18 @@ const UserMenu = () => {
 
   const handleSignOut = async () => {
     try {
+      // 先清除 token，避免觸發不必要的請求
+      dispatch(signOut());
+      
+      // 再執行登出 API
       await FETCH_AUTH.signOut();
       handleSuccess(null, "登出成功");
+      
+      // 最後導航到登入頁
+      navigate("/auth/signIn");
     } catch (error) {
       console.error("Logout API failed:", error);
-    } finally {
-      dispatch(signOut());
+      // 如果登出 API 失敗，仍然保持登出狀態
       navigate("/auth/signIn");
     }
   };

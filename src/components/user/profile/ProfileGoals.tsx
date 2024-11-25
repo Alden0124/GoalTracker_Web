@@ -23,7 +23,7 @@ const ProfileGoals = ({ isCurrentUser, goals }: ProfileGoalsProps) => {
       <div className="flex flex-col gap-4">
         {/* 標題區域 */}
         <div className="flex justify-between items-center">
-          <h2 className="text-xl font-bold">目標列表</h2>
+          <h2 className="text-xl text-foreground-light dark:text-foreground-dark font-bold">目標列表</h2>
           {/* 新增目標按鈕只在當前用戶的頁面顯示 */}
           {isCurrentUser && (
             <button 

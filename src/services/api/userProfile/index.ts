@@ -9,7 +9,12 @@ export const FETCH_USER_PROFILE = {
   UpdateProfile: async (formData: FormData) => {
     const { data } = await axiosInstance.patch<UserProfileResponse>(
       "/users/profile",
-      formData
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
     );
     return data;
   },

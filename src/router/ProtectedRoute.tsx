@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
-// redux  
+// redux
 import { useAppSelector } from "@/hooks/common/useAppReduxs";
 import { selectIsAuthenticated } from "@/stores/slice/userReducer";
 // alert
@@ -47,9 +47,13 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     ];
 
     // 檢查當前路徑屬於哪種類型
-    const isAuthOnlyPath = authOnlyPaths.some(path => location.pathname.startsWith(path));
-    const isPublicPath = publicPaths.some(path => location.pathname === path);
-    const isProtectedPath = protectedPaths.some(path => location.pathname.startsWith(path));
+    const isAuthOnlyPath = authOnlyPaths.some((path) =>
+      location.pathname.startsWith(path)
+    );
+    const isPublicPath = publicPaths.some((path) => location.pathname === path);
+    const isProtectedPath = protectedPaths.some((path) =>
+      location.pathname.startsWith(path)
+    );
     const isProfileDetailPath = location.pathname.match(/^\/profile\/[^/]+$/);
 
     // 有 token 但獲取用戶資料失敗
@@ -70,10 +74,6 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
     // 未登入用戶訪問需要登入的頁面或個人資料頁面
     if (!isAuthenticated && (isProtectedPath || isProfileDetailPath)) {
-      notification.warning({
-        title: "請先登入",
-        text: "您需要登入才能訪問此頁面",
-      });
       navigate("/auth/signIn", {
         state: { from: location.pathname },
         replace: true,
@@ -82,7 +82,12 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     }
 
     // 如果路徑不屬於任何已定義的類型，可以選擇重定向到首頁或顯示 404
-    if (!isAuthOnlyPath && !isPublicPath && !isProtectedPath && !isProfileDetailPath) {
+    if (
+      !isAuthOnlyPath &&
+      !isPublicPath &&
+      !isProtectedPath &&
+      !isProfileDetailPath
+    ) {
       navigate("/", { replace: true });
     }
   }, [isAuthenticated, isError, isLoading, location.pathname, navigate]);
@@ -91,7 +96,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   if (isLoading) {
     return null; // 或者返回一個全局 loading 組件
   }
-  
+
   return children || <Outlet />;
 };
 

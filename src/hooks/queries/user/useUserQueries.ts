@@ -15,10 +15,14 @@ export const useCurrentUser = (options = {}) => {
   return useQuery({
     queryKey: queryKeys.users.profile(),
     queryFn: async () => {
+      if (!token) {
+        throw new Error('No token found');
+      }
+
       try {
         const response = await FETCH_USER_PROFILE.GetUserProfile();
 
-        if (response.user && token) {
+        if (response.user) {
           dispatch(
             setUserInfo({
               accessToken: token,
@@ -33,8 +37,8 @@ export const useCurrentUser = (options = {}) => {
         throw error;
       }
     },
-    enabled: !!token,
-    retry: 0,
+    enabled: Boolean(token),
+    retry:  0,
     staleTime: Infinity,
     gcTime: 1000 * 60 * 5,
     ...options,
