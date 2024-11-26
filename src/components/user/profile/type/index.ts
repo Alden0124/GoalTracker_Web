@@ -1,21 +1,12 @@
-export interface UserProfileResponse {
-  id: string;
-  username?: string;
-  email?: string;
-  avatar?: string;
-  location?: string;
-  occupation?: string;
-  education?: string;
-  isEmailVerified: boolean;
-  providers?: Array<"google" | "line">;
-  goals?: Goal[];
-}
 
+
+// 更新個人資料
 export interface UpdateProfileRequest {
   username: string;
   email: string;
 }
 
+// 目標
 export interface Goal {
   id: string;
   title: string;
@@ -36,9 +27,18 @@ export interface GoalFormData {
   endDate?: string;
 }
 
+// 創建目標
 export interface CreateGoalRequest extends GoalFormData {}
 
+// 更新目標
 export interface UpdateGoalRequest extends Partial<GoalFormData> {
   progress?: number;
   status?: Goal['status'];
+}
+
+// 粉絲/追蹤列表
+export interface FollowList {
+  id: string;
+  username: string;
+  avatar: string;
 }

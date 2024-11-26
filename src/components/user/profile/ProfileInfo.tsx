@@ -1,6 +1,7 @@
+import { useParams } from "react-router-dom";
 import Wrapper from "@/components/common/Wrapper";
-import { useState } from "react";
-import { UserProfileResponse } from "@/components/user/profile/type";
+import { Fragment, useState } from "react";
+import { UserProfileResponse } from "@/services/api/userProfile/type";
 import ProfileAvatar from "@/components/user/profile/ProfileAvatar";
 import ProfileEditDialog from "@/components/user/profile/ProfileEditDialog";
 import { IoLocationOutline } from "react-icons/io5";
@@ -8,18 +9,65 @@ import { MdOutlineWork } from "react-icons/md";
 import { IoSchoolOutline } from "react-icons/io5";
 import renderInfoItem from "./renderInfoItem";
 import { GET_COOKIE } from "@/utils/cookies";
+import FollowListDialog from "./FollowListDialog";
+import {
+  useFollowUser,
+  useUnfollowUser,
+  useGetFollowers,
+  useGetFollowing,
+} from "@/hooks/queries/user/useUserQueries";
 
 interface ProfileInfoProps {
   isCurrentUser: boolean;
-  userData: UserProfileResponse;
+  userData: UserProfileResponse["user"];
 }
+
+type DialogType = "followers" | "following" | null;
 
 const ProfileInfo = ({ isCurrentUser, userData }: ProfileInfoProps) => {
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [dialogType, setDialogType] = useState<DialogType>(null);
+  const { id: otherUserId } = useParams();
+  const { mutate: followUser } = useFollowUser();
+  const { mutate: unfollowUser } = useUnfollowUser();
+  const { data: followersList, isLoading: isLoadingFollowers } =
+    useGetFollowers(otherUserId || "", dialogType === "followers");
+  const { data: followingList, isLoading: isLoadingFollowing } =
+    useGetFollowing(otherUserId || "", dialogType === "following");
   const { avatar, username, occupation, location, education } = userData;
   const token = GET_COOKIE();
 
   const canEdit = isCurrentUser && Boolean(token);
+
+  const userInfoItems = [
+    {
+      id: 1,
+      icon: <IoLocationOutline className="text-xl" />,
+      value: location,
+      placeholder: "新增居住地",
+    },
+    {
+      id: 2,
+      icon: <MdOutlineWork className="text-xl" />,
+      value: occupation,
+      placeholder: "新增職稱",
+    },
+    {
+      id: 3,
+      icon: <IoSchoolOutline className="text-xl" />,
+      value: education,
+      placeholder: "新增學歷",
+    },
+  ];
+
+  // 追蹤/取消追蹤用戶
+  const handleFollowUser = (userId: string) => {
+    if (userData.isFollowing) {
+      unfollowUser(userId);
+    } else {
+      followUser(userId);
+    }
+  };
 
   return (
     <Wrapper className="md:px-[50px] md:w-[35%] md:min-h-[550px]">
@@ -34,7 +82,12 @@ const ProfileInfo = ({ isCurrentUser, userData }: ProfileInfoProps) => {
       {/* 操作按鈕區域 */}
       {!isCurrentUser && (
         <div className="flex gap-2 py-4">
-          <button className="flex-1 btn-primary">關注</button>
+          <button
+            onClick={() => handleFollowUser(otherUserId || "")}
+            className="flex-1 btn-primary"
+          >
+            {userData.isFollowing ? "取消追蹤" : "關注"}
+          </button>
           <button className="flex-1 btn-secondary">發送訊息</button>
         </div>
       )}
@@ -53,46 +106,53 @@ const ProfileInfo = ({ isCurrentUser, userData }: ProfileInfoProps) => {
 
       {/* 用戶資訊區域 */}
       <div className="py-10 space-y-5 border-b border-gray-200 dark:border-gray-600">
-        {/* 地點 */}
-        {renderInfoItem(
-          <IoLocationOutline className="text-xl" />,
-          location,
-          "新增居住地",
-          canEdit
-        )}
-
-        {/* 職業 */}
-        {renderInfoItem(
-          <MdOutlineWork className="text-xl" />,
-          occupation,
-          "新增職稱",
-          canEdit
-        )}
-
-        {/* 學歷 */}
-        {renderInfoItem(
-          <IoSchoolOutline className="text-xl" />,
-          education,
-          "新增學歷",
-          canEdit
-        )}
+        {userInfoItems.map((item) => (
+          <Fragment key={item.id}>
+            {renderInfoItem(
+              item.icon,
+              item.value,
+              item.placeholder,
+              canEdit,
+              setShowEditDialog
+            )}
+          </Fragment>
+        ))}
       </div>
 
       {/* 統計數據區域 */}
       <div className="flex justify-around py-4">
-        <div className="text-center">
+        <div
+          className="text-center cursor-pointer hover:opacity-80"
+          onClick={() => setDialogType("followers")}
+        >
           <div className="text-[30px] font-bold text-foreground-light dark:text-foreground-dark">
-            0
+            {userData.followersCount}
           </div>
           <div className="text-sm text-gray-600 dark:text-gray-300">粉絲數</div>
         </div>
-        <div className="text-center">
+        <div
+          className="text-center cursor-pointer hover:opacity-80"
+          onClick={() => setDialogType("following")}
+        >
           <div className="text-[30px] font-bold text-foreground-light dark:text-foreground-dark">
-            0
+            {userData.followingCount}
           </div>
-          <div className="text-sm text-gray-600 dark:text-gray-300">追蹤者</div>
+          <div className="text-sm text-gray-600 dark:text-gray-300">追蹤中</div>
         </div>
       </div>
+
+      {/* 粉絲/追蹤列表彈窗 */}
+      <FollowListDialog
+        isOpen={dialogType !== null}
+        onClose={() => setDialogType(null)}
+        title={dialogType === "followers" ? "粉絲" : "追蹤中"}
+        isLoading={
+          dialogType === "followers" ? isLoadingFollowers : isLoadingFollowing
+        }
+        followers={
+          dialogType === "followers" ? followersList || [] : followingList || []
+        }
+      />
 
       {/* 編輯個人資料彈窗 */}
       {canEdit && (

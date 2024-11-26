@@ -2,17 +2,17 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { profileSchema, type ProfileFormData } from "@/schemas/userSchema";
 import Input from "@/components/ui/Input";
-import { UserProfileResponse } from "@/components/user/profile/type";
+import { UserProfileResponse } from "@/services/api/userProfile/type";
 // import { notification } from "@/utils/notification";
 // import { FETCH_USER_PROFILE } from "@/services/api/userProfile";
 
 interface ProfileEditFormProps {
-  initialData: UserProfileResponse;
+  initialData: UserProfileResponse["user"];
   onCancel: () => void;
   onSubmit: (data: ProfileFormData) => Promise<void>;
 }
 
-const ProfileEditForm = ({ initialData, onCancel, onSubmit }: ProfileEditFormProps) => {
+const ProfileEditForm = ({ initialData, onCancel }: ProfileEditFormProps) => {
   const {
     register,
     handleSubmit,

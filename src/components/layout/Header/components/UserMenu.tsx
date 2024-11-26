@@ -18,32 +18,31 @@ const UserMenu = () => {
   console.log(useProFile);
   // 點擊選單外部時關閉選單的效果
   useEffect(() => {
-    // 處理點擊事件的函數
     const handleClickOutside = (event: MouseEvent) => {
-      // 如果點擊的位置不在選單內部，則關閉選單
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsMenuOpen(false);
       }
     };
 
-    // 添加全局點擊事件監聽器
-    document.addEventListener("mousedown", handleClickOutside);
-
-    // 組件卸載時移除事件監聽器
+    // 只在選單開啟時添加事件監聽器
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    // 清理函數
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [setIsMenuOpen]);
+  }, [isMenuOpen]);
 
   const handleSignOut = async () => {
     try {
       // 先清除 token，避免觸發不必要的請求
       dispatch(signOut());
-      
+
       // 再執行登出 API
       await FETCH_AUTH.signOut();
       handleSuccess(null, "登出成功");
-      
+
       // 最後導航到登入頁
       navigate("/auth/signIn");
     } catch (error) {
@@ -56,8 +55,8 @@ const UserMenu = () => {
   // 修改判斷當前路徑的函數
   const isCurrentPath = (path: string) => {
     // 如果是 profile 頁面，檢查是否匹配 /profile/ 開頭的路徑
-    if (path === '/profile') {
-      return location.pathname.startsWith('/profile/');
+    if (path === "/profile") {
+      return location.pathname.startsWith("/profile/");
     }
     // 其他頁面保持完全匹配
     return location.pathname === path;
@@ -113,7 +112,7 @@ const UserMenu = () => {
                 block w-full px-4 py-2 text-sm text-left 
                 hover:bg-gray-100 dark:hover:bg-gray-700
                 ${
-                  isCurrentPath('/profile')  // 這裡改為檢查 '/profile'
+                  isCurrentPath("/profile") // 這裡改為檢查 '/profile'
                     ? "text-foreground-lightBlue bg-gray-50 dark:bg-gray-800"
                     : "text-foreground-light dark:text-foreground-dark"
                 }

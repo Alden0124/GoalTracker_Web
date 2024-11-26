@@ -1,21 +1,11 @@
 import { z } from "zod";
 
 export const profileSchema = z.object({
-  username: z.string()
-    .min(2, "姓名至少需要 2 個字元")
-    .max(20, "姓名不能超過 20 個字元"),
-  location: z.string()
-    .min(2, "居住地至少需要 2 個字元")
-    .max(50, "居住地不能超過 50 個字元")
-    .optional(),
-  occupation: z.string()
-    .min(2, "職稱至少需要 2 個字元")
-    .max(50, "職稱不能超過 50 個字元")
-    .optional(),
-  education: z.string()
-    .min(2, "學歷至少需要 2 個字元")
-    .max(50, "學歷不能超過 50 個字元")
-    .optional()
+  username: z.string().min(2, "用戶名稱至少需要2個字"),
+  email: z.string().email("請輸入有效的電子信箱"),
+  location: z.string().optional(),
+  occupation: z.string().optional(),
+  education: z.string().optional(),
 });
 
 export type ProfileFormData = z.infer<typeof profileSchema>;

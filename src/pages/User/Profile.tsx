@@ -1,16 +1,20 @@
 import { useProfileData } from "@/hooks/profile/useProfile";
 import ProfileInfo from "@/components/user/profile/ProfileInfo";
 import ProfileGoals from "@/components/user/profile/ProfileGoals";
+import { useNavigate } from "react-router-dom";
+import "react-loading-skeleton/dist/skeleton.css";
+import ProfileSkeleton from "@/components/user/profile/skeleton/ProfileSkeleton";
 
 const Profile = () => {
+  const navigate = useNavigate();
   const { isCurrentUser, isLoading, error, data } = useProfileData();
 
   if (isLoading) {
-    return <div>載入中...</div>;
+    return <ProfileSkeleton />;
   }
 
   if (error || !data) {
-    return <div>無法載入用戶資料</div>;
+    return navigate(-1);
   }
 
   return (

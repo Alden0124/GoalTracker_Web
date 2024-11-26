@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { profileSchema, type ProfileFormData } from "@/schemas/userSchema";
 import Input from "@/components/ui/Input";
-import { UserProfileResponse } from "@/components/user/profile/type";
+import { UserProfileResponse } from "@/services/api/userProfile/type";
 import ProfileAvatarUpload from "@/components/user/profile/ProfileAvatarUpload";
 import { useState } from "react";
 import { useUpdateProfile } from "@/hooks/queries/user/useUserQueries";
@@ -11,7 +11,7 @@ import { useUpdateProfile } from "@/hooks/queries/user/useUserQueries";
 interface ProfileEditDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  initialData: UserProfileResponse;
+  initialData: UserProfileResponse["user"];
 }
 
 const ProfileEditDialog = ({
