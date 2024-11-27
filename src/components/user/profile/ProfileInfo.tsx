@@ -4,9 +4,8 @@ import { Fragment, useState } from "react";
 import { UserProfileResponse } from "@/services/api/userProfile/type";
 import ProfileAvatar from "@/components/user/profile/ProfileAvatar";
 import ProfileEditDialog from "@/components/user/profile/ProfileEditDialog";
-import { IoLocationOutline } from "react-icons/io5";
+import { IoLocationOutline, IoSchoolOutline } from "react-icons/io5";
 import { MdOutlineWork } from "react-icons/md";
-import { IoSchoolOutline } from "react-icons/io5";
 import renderInfoItem from "./renderInfoItem";
 import { GET_COOKIE } from "@/utils/cookies";
 import FollowListDialog from "./FollowListDialog";
@@ -27,13 +26,19 @@ type DialogType = "followers" | "following" | null;
 const ProfileInfo = ({ isCurrentUser, userData }: ProfileInfoProps) => {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [dialogType, setDialogType] = useState<DialogType>(null);
-  const { id: otherUserId } = useParams();
+  const { id: userId } = useParams();
   const { mutate: followUser } = useFollowUser();
   const { mutate: unfollowUser } = useUnfollowUser();
-  const { data: followersList, isLoading: isLoadingFollowers } =
-    useGetFollowers(otherUserId || "", dialogType === "followers");
-  const { data: followingList, isLoading: isLoadingFollowing } =
-    useGetFollowing(otherUserId || "", dialogType === "following");
+  const {
+    data: followersList,
+    isLoading: isLoadingFollowers,
+    isRefetching: isRefetchingFollowers,
+  } = useGetFollowers(userId || "", dialogType === "followers");
+  const {
+    data: followingList,
+    isLoading: isLoadingFollowing,
+    isRefetching: isRefetchingFollowing,
+  } = useGetFollowing(userId || "", dialogType === "following");
   const { avatar, username, occupation, location, education } = userData;
   const token = GET_COOKIE();
 
@@ -83,7 +88,7 @@ const ProfileInfo = ({ isCurrentUser, userData }: ProfileInfoProps) => {
       {!isCurrentUser && (
         <div className="flex gap-2 py-4">
           <button
-            onClick={() => handleFollowUser(otherUserId || "")}
+            onClick={() => handleFollowUser(userId || "")}
             className="flex-1 btn-primary"
           >
             {userData.isFollowing ? "取消追蹤" : "關注"}
@@ -123,7 +128,9 @@ const ProfileInfo = ({ isCurrentUser, userData }: ProfileInfoProps) => {
       <div className="flex justify-around py-4">
         <div
           className="text-center cursor-pointer hover:opacity-80"
-          onClick={() => setDialogType("followers")}
+          onClick={() => {
+            setDialogType("followers");
+          }}
         >
           <div className="text-[30px] font-bold text-foreground-light dark:text-foreground-dark">
             {userData.followersCount}
@@ -132,7 +139,9 @@ const ProfileInfo = ({ isCurrentUser, userData }: ProfileInfoProps) => {
         </div>
         <div
           className="text-center cursor-pointer hover:opacity-80"
-          onClick={() => setDialogType("following")}
+          onClick={() => {
+            setDialogType("following");
+          }}
         >
           <div className="text-[30px] font-bold text-foreground-light dark:text-foreground-dark">
             {userData.followingCount}
@@ -144,10 +153,14 @@ const ProfileInfo = ({ isCurrentUser, userData }: ProfileInfoProps) => {
       {/* 粉絲/追蹤列表彈窗 */}
       <FollowListDialog
         isOpen={dialogType !== null}
+        isCurrentUser={isCurrentUser}
         onClose={() => setDialogType(null)}
         title={dialogType === "followers" ? "粉絲" : "追蹤中"}
         isLoading={
           dialogType === "followers" ? isLoadingFollowers : isLoadingFollowing
+        }
+        isRefetching={
+          dialogType === "followers" ? isRefetchingFollowers : isRefetchingFollowing
         }
         followers={
           dialogType === "followers" ? followersList || [] : followingList || []

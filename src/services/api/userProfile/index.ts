@@ -24,12 +24,19 @@ export const FETCH_USER_PROFILE = {
   FollowUser: (userId: string): Promise<UserProfileResponse> =>
     axiosInstance.post(`/users/follow/${userId}`),
 
+  // 取消追蹤
   UnfollowUser: (userId: string): Promise<UserProfileResponse> =>
     axiosInstance.delete(`/users/follow/${userId}`),
 
+  // 取消粉絲
+  UnfollowFollower: (userId: string, followerId: string): Promise<UserProfileResponse> =>
+    axiosInstance.delete(`/users/followers/${userId}/${followerId}`),
+
+  // 粉絲列表
   GetFollowers: (userId: string): Promise<UserProfileResponse> =>
     axiosInstance.get(`/users/followers/${userId}`),
 
+  // 追蹤者列表
   GetFollowing: (userId: string): Promise<UserProfileResponse> =>
     axiosInstance.get(`/users/following/${userId}`),
 };

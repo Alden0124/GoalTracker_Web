@@ -2,12 +2,21 @@ import Dialog from "@/components/common/Dialog";
 import { IoPersonOutline } from "react-icons/io5";
 import { FollowList } from "./type";
 import FollowListDialogSkeleton from "./skeleton/FollowListDialogSkeleton";
+import ProfileAvatar from "./ProfileAvatar";
+import { useUnfollowUser } from "@/hooks/queries/user/useUserQueries";
+import { FETCH_USER_PROFILE } from "@/services/api/userProfile";
+import { useParams } from "react-router-dom";
+import { notification } from "@/utils/notification";
+import { handleError } from "@/utils/errorHandler";
+
 interface FollowListDialogProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
   followers: FollowList[];
   isLoading: boolean;
+  isRefetching: boolean;
+  isCurrentUser: boolean;
 }
 
 const FollowListDialog = ({
@@ -16,25 +25,60 @@ const FollowListDialog = ({
   title,
   followers,
   isLoading,
+  isRefetching,
+  isCurrentUser,
 }: FollowListDialogProps) => {
+  const { mutate: unfollowUser } = useUnfollowUser();
+  const { id } = useParams();
+
+  const handleUnfollow = async (followerId: string) => {
+    if (title === "粉絲") {
+      try {
+        await FETCH_USER_PROFILE.UnfollowFollower(id || "", followerId);
+        notification.success({
+          title: "已取消粉絲",
+        });
+      } catch (error) {
+        handleError(error, "取消粉絲失敗");
+      } finally {
+        onClose();
+      }
+    }
+
+    if (title === "追蹤中") {
+      await unfollowUser(followerId);
+    }
+  };
+
   return (
     <Dialog isOpen={isOpen} onClose={onClose} title={title}>
-      {isLoading ? (
+      {isLoading || isRefetching ? (
         <FollowListDialogSkeleton />
       ) : followers.length > 0 ? (
         <div className="space-y-4">
           {followers.map((follower) => (
-            <div key={follower.id} className="flex items-center justify-between">
+            <div
+              key={follower.id}
+              className="flex items-center justify-between"
+            >
               <div className="flex items-center gap-3">
-                <img
-                  src={follower.avatar || "/default-avatar.png"}
-                  alt={follower.username}
-                  className="w-10 h-10 rounded-full"
-                />
+                {follower.avatar ? (
+                  <img
+                    src={follower.avatar || "/default-avatar.png"}
+                    alt={follower.username}
+                    className="w-10 h-10 rounded-full"
+                  />
+                ) : (
+                  <ProfileAvatar avatar={follower.avatar} size={40} />
+                )}
                 <span className="font-medium">{follower.username}</span>
               </div>
-              <button className="text-blue-500 hover:text-blue-600">
-                移除
+              <button
+                onClick={() => handleUnfollow(follower.id)}
+                className="text-blue-500 hover:text-blue-600"
+              >
+                {title === "粉絲" && isCurrentUser && "取消粉絲"}
+                {title === "追蹤中" && "取消追蹤"}
               </button>
             </div>
           ))}

@@ -1,7 +1,8 @@
 import { Goal } from "@/components/user/profile/type";
 import { FollowList } from "@/components/user/profile/type";
 export interface UserProfileResponse {
-  followers: any;
+  followers: FollowList[];
+  following: FollowList[];
   message: string;
   user: {
     id: string;
@@ -17,7 +18,5 @@ export interface UserProfileResponse {
     isFollowing?: boolean;
     followersCount?: number;
     followingCount?: number;
-    followers?: FollowList[];
-    following?: FollowList[];
   };
 }

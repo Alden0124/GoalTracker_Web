@@ -131,36 +131,40 @@ export const useUnfollowUser = () => {
   });
 };
 
-// 獲取粉絲
+/**
+ * 獲取粉絲列表，每次調用時都會重新獲取數據
+ */
 export const useGetFollowers = (userId: string, isOpen: boolean, options = {}) => {
   return useQuery({
-    queryKey: queryKeys.users.followers(userId),
+    queryKey: [queryKeys.users.followers(userId), isOpen],
     queryFn: async () => {
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 最小加載時間
+      await new Promise(resolve => setTimeout(resolve, 1000));
       const response = await FETCH_USER_PROFILE.GetFollowers(userId);
       return response.followers;
     },
     enabled: !!userId && isOpen,
     retry: 0,
-    staleTime: Infinity,
     gcTime: 1000 * 60 * 5,
+    staleTime: 0,
     ...options,
   });
 };
 
-// 獲取追蹤者
+/**
+ * 獲取追蹤者列表，每次調用時都會重新獲取數據
+ */
 export const useGetFollowing = (userId: string, isOpen: boolean, options = {}) => {
   return useQuery({
-    queryKey: queryKeys.users.following(userId),
+    queryKey: [queryKeys.users.following(userId), isOpen],
     queryFn: async () => {
-      await new Promise(resolve => setTimeout(resolve, 1000)); // 最小加載時間
+      await new Promise(resolve => setTimeout(resolve, 1000));
       const response = await FETCH_USER_PROFILE.GetFollowing(userId);
-      return response.followers;
+      return response.following;
     },
     enabled: !!userId && isOpen,
     retry: 0,
-    staleTime: Infinity,
     gcTime: 1000 * 60 * 5,
+    staleTime: 0,
     ...options,
   });
 };

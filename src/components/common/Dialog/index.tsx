@@ -44,7 +44,7 @@ const Dialog = ({ isOpen, onClose, children, title }: DialogProps) => {
   return (
     <dialog
       ref={dialogRef}
-      className="w-full max-w-2xl bg-white dark:bg-background-dark rounded-lg shadow-xl p-0 backdrop:bg-black/25"
+      className="mx-auto w-[90%] md:w-[600px] bg-white dark:bg-background-dark rounded-lg shadow-xl p-0 backdrop:bg-black/25"
       onClick={handleBackdropClick}
     >
       <div className="flex flex-col max-h-[90vh]">
