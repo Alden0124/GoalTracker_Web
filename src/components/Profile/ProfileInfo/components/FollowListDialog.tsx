@@ -1,11 +1,11 @@
 import Dialog from "@/components/common/Dialog";
 import { IoPersonOutline } from "react-icons/io5";
-import { FollowList } from "./type";
-import FollowListDialogSkeleton from "./skeleton/FollowListDialogSkeleton";
+import { FollowList } from "../type";
+import FollowListDialogSkeleton from "../skeleton/FollowListDialogSkeleton";
 import ProfileAvatar from "./ProfileAvatar";
-import { useUnfollowUser } from "@/hooks/queries/user/useUserQueries";
-import { FETCH_USER_PROFILE } from "@/services/api/userProfile";
-import { useParams } from "react-router-dom";
+import { useUnfollowUser } from "@/hooks/profile/ProfileInfo/queries/useProfileProfileInfoQueries";
+import { FETCH_USER_PROFILE } from "@/services/api/Profile/ProfileInfo";
+import { useNavigate, useParams } from "react-router-dom";
 import { notification } from "@/utils/notification";
 import { handleError } from "@/utils/errorHandler";
 
@@ -28,9 +28,11 @@ const FollowListDialog = ({
   isRefetching,
   isCurrentUser,
 }: FollowListDialogProps) => {
+  const navigate = useNavigate();
   const { mutate: unfollowUser } = useUnfollowUser();
   const { id } = useParams();
 
+  // 取消追蹤
   const handleUnfollow = async (followerId: string) => {
     if (title === "粉絲") {
       try {
@@ -50,6 +52,12 @@ const FollowListDialog = ({
     }
   };
 
+  // 跳轉到用戶頁面
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    onClose();
+  };
+
   return (
     <Dialog isOpen={isOpen} onClose={onClose} title={title}>
       {isLoading || isRefetching ? (
@@ -61,7 +69,10 @@ const FollowListDialog = ({
               key={follower.id}
               className="flex items-center justify-between"
             >
-              <div className="flex items-center gap-3">
+              <button
+                onClick={() => handleNavigate(`/profile/${follower.id}`)}
+                className="w-full flex items-center gap-3"
+              >
                 {follower.avatar ? (
                   <img
                     src={follower.avatar || "/default-avatar.png"}
@@ -72,10 +83,10 @@ const FollowListDialog = ({
                   <ProfileAvatar avatar={follower.avatar} size={40} />
                 )}
                 <span className="font-medium">{follower.username}</span>
-              </div>
+              </button>
               <button
                 onClick={() => handleUnfollow(follower.id)}
-                className="text-blue-500 hover:text-blue-600"
+                className="text-blue-500 hover:text-blue-600 break-keep"
               >
                 {title === "粉絲" && isCurrentUser && "取消粉絲"}
                 {title === "追蹤中" && "取消追蹤"}

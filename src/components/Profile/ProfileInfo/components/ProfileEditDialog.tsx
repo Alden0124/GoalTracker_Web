@@ -1,12 +1,12 @@
 import Dialog from "@/components/common/Dialog";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { profileSchema, type ProfileFormData } from "@/schemas/userSchema";
+import { profileSchema, type ProfileFormData } from "@/schemas/profileSchema";
 import Input from "@/components/ui/Input";
-import { UserProfileResponse } from "@/services/api/userProfile/type";
-import ProfileAvatarUpload from "@/components/user/profile/ProfileAvatarUpload";
+import { UserProfileResponse } from "@/services/api/Profile/ProfileInfo/type";
+import ProfileAvatarUpload from "@/components/Profile/ProfileInfo/components/ProfileAvatarUpload";
 import { useState } from "react";
-import { useUpdateProfile } from "@/hooks/queries/user/useUserQueries";
+import { useUpdateProfile } from "@/hooks/profile/ProfileInfo/queries/useProfileProfileInfoQueries";
 
 interface ProfileEditDialogProps {
   isOpen: boolean;

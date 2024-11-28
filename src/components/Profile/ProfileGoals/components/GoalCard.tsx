@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Goal } from '@/components/user/profile/type';
+import { Goal } from '../type';
 import { formatDate } from '@/utils/dateFormat';
 
 interface GoalCardProps {

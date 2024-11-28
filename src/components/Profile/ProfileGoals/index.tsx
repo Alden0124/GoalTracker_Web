@@ -1,8 +1,11 @@
 import { useState } from "react";
 import Wrapper from "@/components/common/Wrapper";
-import AddGoalDialog from "@/components/user/profile/AddGoalDialog";
-import GoalCard from "@/components/user/profile/GoalCard";
-import type { Goal, GoalFormData } from "@/components/user/profile/type";
+import AddGoalDialog from "@/components/Profile/ProfileGoals/components/AddGoalDialog";
+import GoalCard from "@/components/Profile/ProfileGoals/components/GoalCard";
+import { GoalFormData } from "@/schemas/goalSchema";
+import { Goal } from "./type";
+import { useCreateGoal } from "@/hooks/profile/ProfileGoals/queries/useProfileGoalsQueries";
+
 
 interface ProfileGoalsProps {
   isCurrentUser: boolean;
@@ -11,11 +14,13 @@ interface ProfileGoalsProps {
 
 const ProfileGoals = ({ isCurrentUser, goals }: ProfileGoalsProps) => {
   const [showAddGoalDialog, setShowAddGoalDialog] = useState(false);
+  // const { mutate: createGoal } = useCreateGoal();
 
   const handleAddGoal = (data: GoalFormData) => {
     // 處理新增目標邏輯
-    console.log("新增目標:", data);
     setShowAddGoalDialog(false);
+    console.log("GoalFormData", data);
+    // createGoal(data);
   };
 
   return (
@@ -23,10 +28,12 @@ const ProfileGoals = ({ isCurrentUser, goals }: ProfileGoalsProps) => {
       <div className="flex flex-col gap-4">
         {/* 標題區域 */}
         <div className="flex justify-between items-center">
-          <h2 className="text-xl text-foreground-light dark:text-foreground-dark font-bold">目標列表</h2>
+          <h2 className="text-xl text-foreground-light dark:text-foreground-dark font-bold">
+            目標列表
+          </h2>
           {/* 新增目標按鈕只在當前用戶的頁面顯示 */}
           {isCurrentUser && (
-            <button 
+            <button
               className="btn-primary"
               onClick={() => setShowAddGoalDialog(true)}
             >
@@ -38,11 +45,7 @@ const ProfileGoals = ({ isCurrentUser, goals }: ProfileGoalsProps) => {
         {/* 目標列表 */}
         <div className="space-y-4">
           {goals.map((goal) => (
-            <GoalCard 
-              key={goal.id} 
-              goal={goal}
-              isCurrentUser={isCurrentUser}
-            />
+            <GoalCard key={goal.id} goal={goal} isCurrentUser={isCurrentUser} />
           ))}
         </div>
 

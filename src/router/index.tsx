@@ -14,10 +14,10 @@ const SendCode = lazy(() => import("@/pages/Auth/SendCode"));
 const VerifyCode = lazy(() => import("@/pages/Auth/VerifyCode"));
 const ResetPassword = lazy(() => import("@/pages/Auth/ResetPassword"));
 const NotFoundPage = lazy(() => import("@/pages/NotFound"));
-const Profile = lazy(() => import("@/pages/User/Profile"));
+const Profile = lazy(() => import("@/pages/Profile"));
 const routes = [
   {
-    path: "*",
+    path: "*", 
     element: (
       <Suspense fallback={<div className="h-screen"></div>}>
         <NotFoundPage />

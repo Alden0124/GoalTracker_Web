@@ -1,8 +1,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { profileSchema, type ProfileFormData } from "@/schemas/userSchema";
+import { profileSchema, type ProfileFormData } from "@/schemas/profileSchema";
 import Input from "@/components/ui/Input";
-import { UserProfileResponse } from "@/services/api/userProfile/type";
+import { UserProfileResponse } from "@/services/api/Profile/ProfileInfo/type";
 // import { notification } from "@/utils/notification";
 // import { FETCH_USER_PROFILE } from "@/services/api/userProfile";
 

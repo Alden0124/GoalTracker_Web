@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { FETCH_USER_PROFILE } from "@/services/api/userProfile";
+import { FETCH_USER_PROFILE } from "@/services/api/Profile/ProfileInfo";
 import { useAppDispatch } from "@/hooks/common/useAppReduxs";
 import { setUserInfo } from "@/stores/slice/userReducer";
 import { GET_COOKIE } from "@/utils/cookies";

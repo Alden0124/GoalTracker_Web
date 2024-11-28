@@ -1,7 +1,7 @@
 import { useAppSelector } from "@/hooks/common/useAppReduxs";
 import { selectUserProFile } from "@/stores/slice/userReducer";
 import { useParams } from "react-router-dom";
-import { useCurrentUser, usePublicUserProfile } from "../queries/user/useUserQueries";
+import { useCurrentUser, usePublicUserProfile } from "./queries/useProfileProfileInfoQueries";
 import { GET_COOKIE } from "@/utils/cookies";
 
 // 統一處理 Profile 頁面的數據邏輯

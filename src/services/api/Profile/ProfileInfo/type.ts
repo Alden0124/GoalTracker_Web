@@ -1,5 +1,5 @@
-import { Goal } from "@/components/user/profile/type";
-import { FollowList } from "@/components/user/profile/type";
+import { Goal } from "@/components/Profile/ProfileInfo/type";
+import { FollowList } from "@/components/Profile/ProfileInfo/type";
 export interface UserProfileResponse {
   followers: FollowList[];
   following: FollowList[];

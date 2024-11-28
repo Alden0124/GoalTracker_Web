@@ -6,7 +6,7 @@ import { selectIsAuthenticated } from "@/stores/slice/userReducer";
 // alert
 import { notification } from "@/utils/notification";
 // hooks
-import { useCurrentUser } from "@/hooks/queries/user/useUserQueries";
+import { useCurrentUser } from "@/hooks/profile/ProfileInfo/queries/useProfileProfileInfoQueries";
 // cookies
 import { GET_COOKIE } from "@/utils/cookies";
 

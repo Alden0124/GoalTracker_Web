@@ -11,7 +11,11 @@ export const goalSchema = z.object({
     .min(1, "請選擇開始日期"),
   endDate: z.string()
     .min(1, "請選擇預計完成日期")
-    .optional()
+    .optional(),
+  isPublic: z.boolean({
+    required_error: "請選擇是否公開",
+    invalid_type_error: "請選擇是否公開",
+  }),
 }).refine((data) => {
   if (data.endDate && data.startDate > data.endDate) {
     return false;
@@ -21,3 +25,5 @@ export const goalSchema = z.object({
   message: "結束日期必須在開始日期之後",
   path: ["endDate"]
 });
+
+export type GoalFormData = z.infer<typeof goalSchema>;

@@ -1,9 +1,9 @@
-import { useProfileData } from "@/hooks/profile/useProfile";
-import ProfileInfo from "@/components/user/profile/ProfileInfo";
-import ProfileGoals from "@/components/user/profile/ProfileGoals";
+import { useProfileData } from "@/hooks/profile/ProfileInfo/useProfile";
+import ProfileInfo from "@/components/Profile/ProfileInfo";
+import ProfileGoals from "@/components/Profile/ProfileGoals";
 import { useNavigate } from "react-router-dom";
 import "react-loading-skeleton/dist/skeleton.css";
-import ProfileSkeleton from "@/components/user/profile/skeleton/ProfileSkeleton";
+import ProfileSkeleton from "@/components/Profile/ProfileInfo/skeleton/ProfileSkeleton";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -14,7 +14,8 @@ const Profile = () => {
   }
 
   if (error || !data) {
-    return navigate(-1);
+    navigate(-1);
+    return null;
   }
 
   return (

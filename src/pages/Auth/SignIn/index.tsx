@@ -5,8 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { signInSchema, type SignInFormDataType } from "@/schemas/authSchema";
 // 組件
 import Input from "@/components/ui/Input";
-import GoogleLoginButton from "@/components/Auth/OAuth/GoogleLoginButton";
-import LineLoginButton from "@/components/Auth/OAuth/LineLoginButton";
+import GoogleLoginButton from "@/components/auth/OAuth/GoogleLoginButton";
+import LineLoginButton from "@/components/auth/OAuth/LineLoginButton";
 // icon
 // import { FcGoogle } from "react-icons/fc";
 // api
