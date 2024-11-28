@@ -40,6 +40,7 @@ const Header = () => {
         shadow-sm 
         bg-background-light dark:bg-background-dark 
         text-foreground-light dark:text-foreground-dark
+        z-10
       `}
     >
       <Link to={'/'} className="text-[18px]">GoalTracker</Link>

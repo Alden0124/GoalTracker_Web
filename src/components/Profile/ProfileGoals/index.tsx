@@ -1,25 +1,22 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import Wrapper from "@/components/common/Wrapper";
-import AddGoalDialog from "@/components/Profile/ProfileGoals/components/AddGoalDialog";
-import GoalCard from "@/components/Profile/ProfileGoals/components/GoalCard";
+import GoalFormDialog from "@/components/Profile/ProfileGoals/components/GoalFormDialog";
 import { GoalFormData } from "@/schemas/goalSchema";
 import {
   useCreateGoal,
   useGetUserGoals,
 } from "@/hooks/profile/ProfileGoals/queries/useProfileGoalsQueries";
-import {
-  GetUserGoalsParams,
-  Goal,
-} from "@/services/api/Profile/ProfileGoals/type";
+import { GetUserGoalsParams } from "@/services/api/Profile/ProfileGoals/type";
+import GoalList from "./components/GoalList";
 
 interface ProfileGoalsProps {
   isCurrentUser: boolean;
 }
 
 const ProfileGoals = ({ isCurrentUser }: ProfileGoalsProps) => {
-  const [showAddGoalDialog, setShowAddGoalDialog] = useState(false);
-  const { mutate: createGoal, isPending } = useCreateGoal();
+  const [showGoalDialog, setShowGoalDialog] = useState(false);
+  const { mutate: createGoal, isPending: isCreatePending } = useCreateGoal();
   const { id: userId } = useParams();
 
   // 設置分頁參數
@@ -30,17 +27,16 @@ const ProfileGoals = ({ isCurrentUser }: ProfileGoalsProps) => {
     status: "",
   };
 
+  // 獲取用戶的目標列表
   const { data: userGoals, isLoading } = useGetUserGoals(userId || "", params);
 
-
   // 新增目標
-  const handleAddGoal = (data: GoalFormData) => {
-    setShowAddGoalDialog(false);
+  const handleSubmit = (data: GoalFormData) => {
     createGoal(data);
   };
 
   return (
-    <Wrapper className="md:w-[60%] h-[600px]">
+    <Wrapper className="md:w-[60%] !min-h-[600px] bg-transparent !p-0 border-none">
       <div className="h-full flex flex-col gap-4">
         {/* 標題區域 */}
         <div className="flex justify-between items-center">
@@ -51,7 +47,7 @@ const ProfileGoals = ({ isCurrentUser }: ProfileGoalsProps) => {
           {isCurrentUser && (
             <button
               className="btn-primary"
-              onClick={() => setShowAddGoalDialog(true)}
+              onClick={() => setShowGoalDialog(true)}
             >
               新增目標
             </button>
@@ -61,13 +57,7 @@ const ProfileGoals = ({ isCurrentUser }: ProfileGoalsProps) => {
         {/* 目標列表 */}
         <div className="h-full space-y-4">
           {userGoals && userGoals?.goals.length > 0 ? (
-            userGoals.goals.map((goal: Goal) => (
-              <GoalCard
-                key={goal._id}
-                goal={goal}
-                isCurrentUser={isCurrentUser}
-              />
-            ))
+            <GoalList goals={userGoals.goals} isCurrentUser={isCurrentUser} />
           ) : (
             <div className="h-full flex flex-col items-center justify-center py-8 text-gray-500">
               <svg
@@ -95,11 +85,11 @@ const ProfileGoals = ({ isCurrentUser }: ProfileGoalsProps) => {
         </div>
 
         {/* 新增目標對話框 */}
-        <AddGoalDialog
-          isOpen={showAddGoalDialog}
-          isPending={isPending}
-          onClose={() => setShowAddGoalDialog(false)}
-          onSubmit={handleAddGoal}
+        <GoalFormDialog
+          isOpen={showGoalDialog}
+          isPending={isCreatePending}
+          onClose={() => setShowGoalDialog(false)}
+          onSubmit={handleSubmit}
         />
       </div>
     </Wrapper>

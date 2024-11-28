@@ -4,12 +4,19 @@ import { GoalFormData } from "@/schemas/goalSchema";
 import { queryKeys } from "./queryKeys";
 import { useQueryClient } from "@tanstack/react-query";
 import { notification } from "@/utils/notification";
-import { GetUserGoalsParams } from "@/services/api/Profile/ProfileGoals/type";
+import { GetUserGoalsParams, GoalStatus } from "@/services/api/Profile/ProfileGoals/type";
+import { handleError } from "@/utils/errorHandler";
+
+
+
+
+interface UpdateGoalData extends GoalFormData {
+  status?: GoalStatus;
+}
 
 // 創建目標
 export const useCreateGoal = () => {
   const queryClient = useQueryClient();
-
   return useMutation({
     mutationFn: (data: GoalFormData) => FETCH_GOAL.CreateGoal(data),
     onSuccess: () => {
@@ -29,6 +36,40 @@ export const useCreateGoal = () => {
     },
   });
 };
+
+// 刪除目標
+export const useDeleteGoal = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (goalId: string) => FETCH_GOAL.DeleteGoal(goalId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.goals.getUserGoals() 
+      });
+      notification.success({ title: "目標刪除成功" });
+    },
+    onError: (error: any) => {
+      handleError(error, "刪除目標失敗");
+    },
+  });
+};
+
+// 更新目標
+export const useUpdateGoal = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ goalId, data }: { goalId: string; data: UpdateGoalData }) =>
+      FETCH_GOAL.UpdateGoal(goalId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ 
+        queryKey: queryKeys.goals.getUserGoals() 
+      });
+      notification.success({ title: "目標更新成功" });
+    },
+  });
+};
+
 
 // 獲取指定用戶的目標列表
 export const useGetUserGoals = (userId: string, params: GetUserGoalsParams) => {
