@@ -1,13 +1,14 @@
-import { forwardRef, InputHTMLAttributes, useState, useRef } from "react";
+import { forwardRef, InputHTMLAttributes, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
   label?: string;
+  onClick?: () => void;
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ error, label, className = "", type, ...props }, ref) => {
+  ({ error, label, className = "", type, onClick, ...props }, ref) => {
     const [showPassword, setShowPassword] = useState(false);
     const isPasswordType = type === "password";
     const isDateType = type === "date";
@@ -24,7 +25,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         <div 
           className={`relative ${isDateType ? 'cursor-pointer' : ''}`} 
-
+          onClick={onClick}
         >
           <input
             ref={(e) => {

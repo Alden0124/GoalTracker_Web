@@ -8,9 +8,10 @@ export const goalSchema = z.object({
     .min(1, "請輸入目標描述")
     .max(500, "描述不能超過 500 個字"),
   startDate: z.string()
-    .min(1, "請選擇開始日期"),
+    .min(1, "請選擇開始日期")
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "日期格式不正確"),
   endDate: z.string()
-    .min(1, "請選擇預計完成日期")
+    .regex(/^\d{4}-\d{2}-\d{2}$/, "日期格式不正確")
     .optional(),
   isPublic: z.boolean({
     required_error: "請選擇是否公開",

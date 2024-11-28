@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { Goal } from '../type';
-import { formatDate } from '@/utils/dateFormat';
+import { useState } from "react";
+import { Goal } from "@/services/api/Profile/ProfileGoals/type";
+import { formatDate } from "@/utils/dateFormat";
 
 interface GoalCardProps {
   goal: Goal;
@@ -11,73 +11,83 @@ const GoalCard = ({ goal, isCurrentUser }: GoalCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const statusMap = {
-    pending: '待開始',
-    in_progress: '進行中',
-    completed: '已完成',
-    cancelled: '已取消'
+    pending: "待開始",
+    in_progress: "進行中",
+    completed: "已完成",
+    cancelled: "已取消",
   };
 
   const statusColorMap = {
-    pending: 'bg-gray-500',
-    in_progress: 'bg-blue-500',
-    completed: 'bg-green-500',
-    cancelled: 'bg-red-500'
+    pending: "bg-gray-500",
+    in_progress: "bg-blue-500",
+    completed: "bg-green-500",
+    cancelled: "bg-red-500",
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-      <div className="flex justify-between items-start">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="text-lg font-semibold dark:text-white">{goal.title}</h3>
+          <h3 className="text-xl font-medium dark:text-white">{goal.title}</h3>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
-            開始日期: {formatDate(goal.startDate)}
+            保持身體健康
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className={`px-2 py-1 rounded-full text-white text-sm ${statusColorMap[goal.status]}`}>
-            {statusMap[goal.status]}
-          </span>
-          {isCurrentUser && (
-            <button 
-              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-              onClick={() => setIsExpanded(!isExpanded)}
-            >
-              {isExpanded ? '收起' : '展開'}
-            </button>
-          )}
-        </div>
+        <button className="ml-4 text-gray-400 hover:text-gray-600">...</button>
       </div>
 
-      {/* 進度條 */}
-      <div className="mt-4">
-        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-          <div 
-            className="bg-blue-600 h-2.5 rounded-full"
-            style={{ width: `${goal.progress}%` }}
-          />
-        </div>
-        <span className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          進度: {goal.progress}%
+      <div className="flex items-center gap-4 mb-4">
+        <span className="text-gray-500 dark:text-gray-400 text-sm">
+          開始時間：{formatDate(goal.startDate)}
         </span>
       </div>
 
-      {/* 展開後顯示的內容 */}
-      {isExpanded && (
-        <div className="mt-4 space-y-2">
-          <p className="text-gray-600 dark:text-gray-300">{goal.description}</p>
-          {goal.endDate && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              預計完成日期: {formatDate(goal.endDate)}
-            </p>
-          )}
-          {isCurrentUser && (
-            <div className="flex justify-end gap-2 mt-4">
-              <button className="btn-secondary text-sm">編輯</button>
-              <button className="btn-danger text-sm">刪除</button>
-            </div>
-          )}
+      {/* 按鈕區域 - 改為並排 */}
+      <div className="flex gap-4 mb-4">
+        <button className="flex-1 bg-blue-500 text-white py-3 rounded-lg hover:bg-blue-600 transition-colors">
+          進度記錄
+        </button>
+        <button className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-lg hover:bg-gray-200 transition-colors">
+          留言
+        </button>
+      </div>
+
+      <div className="flex items-center">
+        <div className="flex items-center">
+          <span className="text-gray-400 mr-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </span>
+          <span className="text-gray-500">2</span>
         </div>
-      )}
+        <div className="flex items-center ml-4">
+          <span className="text-gray-400 mr-2">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </span>
+          <span className="text-gray-500">1 則留言</span>
+        </div>
+      </div>
     </div>
   );
 };

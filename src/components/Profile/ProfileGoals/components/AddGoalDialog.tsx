@@ -4,16 +4,17 @@ import { goalSchema } from "@/schemas/goalSchema";
 import type { GoalFormData } from "@/schemas/goalSchema";
 import Input from "@/components/ui/Input";
 import Dialog from "@/components/common/Dialog";
-import { useCreateGoal } from "@/hooks/profile/ProfileGoals/queries/useProfileGoalsQueries";
+import { useRef } from "react";
 
 interface AddGoalDialogProps {
   isOpen: boolean;
+  isPending: boolean;
   onClose: () => void;
+  onSubmit: (data: GoalFormData) => void;
 }
 
-const AddGoalDialog = ({ isOpen, onClose }: AddGoalDialogProps) => {
-  const { mutate: createGoal, isPending } = useCreateGoal();
-  
+const AddGoalDialog = ({ isOpen, isPending, onClose, onSubmit }: AddGoalDialogProps) => {
+
   const {
     register,
     handleSubmit,
@@ -23,14 +24,15 @@ const AddGoalDialog = ({ isOpen, onClose }: AddGoalDialogProps) => {
     resolver: zodResolver(goalSchema),
   });
 
+  // 提交表單
   const handleFormSubmit = async (data: GoalFormData) => {
-    createGoal(data, {
-      onSuccess: () => {
-        reset();
-        onClose();
-      },
-    });
+    console.log('提交的表單數據:', data);
+    onSubmit(data);
+    reset();
+    onClose();
   };
+
+
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose} title="新增目標">
@@ -69,7 +71,11 @@ const AddGoalDialog = ({ isOpen, onClose }: AddGoalDialogProps) => {
           >
             公開
           </label>
-          <input type="checkbox" defaultChecked={true} {...register("isPublic")} />
+          <input
+            type="checkbox"
+            defaultChecked={true}
+            {...register("isPublic")}
+          />
           {errors.isPublic && (
             <p className="text-red-500 text-sm mt-1">
               {errors.isPublic?.message}

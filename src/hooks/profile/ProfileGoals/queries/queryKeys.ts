@@ -1,6 +1,6 @@
 export const queryKeys = {
   goals: {
-    all: ["goals"] as const,
-    createGoal: () => [...queryKeys.goals.all, "createGoal"] as const,
+    getUserGoals: (userId?: string) => 
+      userId ? ['goals', 'list', userId] : ['goals', 'list'],
   },
-};
+} as const;

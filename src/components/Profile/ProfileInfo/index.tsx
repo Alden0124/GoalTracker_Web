@@ -75,7 +75,7 @@ const ProfileInfo = ({ isCurrentUser, userData }: ProfileInfoProps) => {
   };
 
   return (
-    <Wrapper className="md:px-[50px] md:w-[35%] md:min-h-[550px]">
+    <Wrapper className="md:px-[50px] md:w-[35%] md:min-h-[600px]">
       {/* 頭像和用戶名區域 */}
       <div className="flex flex-col items-center pb-6">
         <ProfileAvatar avatar={avatar} size={120} />
