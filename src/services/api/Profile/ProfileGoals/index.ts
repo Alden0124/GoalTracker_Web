@@ -1,6 +1,6 @@
 import axiosInstance from "@/services/axiosInstance";
 import { GoalFormData } from "@/schemas/goalSchema";
-import { GetUserGoalsParams, GetUserGoalsResponse } from "./type";
+import { GetUserGoalsParams, GetUserGoalsResponse, Goal } from "./type";
 
 export const FETCH_GOAL = {
   // 創建目標
@@ -20,4 +20,12 @@ export const FETCH_GOAL = {
         sort: params.sort
       }
     }),
+
+  // 更新目標
+  UpdateGoal: (goalId: string, formData: GoalFormData) =>
+    axiosInstance.put(`/goals/updateGoal/${goalId}`, formData),
+
+  // 刪除目標
+  DeleteGoal: (goalId: string) =>
+    axiosInstance.delete(`/goals/deleteGoal/${goalId}`),
 };

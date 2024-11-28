@@ -75,7 +75,7 @@ const ProfileInfo = ({ isCurrentUser, userData }: ProfileInfoProps) => {
   };
 
   return (
-    <Wrapper className="md:px-[50px] md:w-[35%] md:min-h-[600px]">
+    <Wrapper className="md:px-[50px] md:w-[35%] md:min-h-[600px] md:sticky md:top-[64px] z-0">
       {/* 頭像和用戶名區域 */}
       <div className="flex flex-col items-center pb-6">
         <ProfileAvatar avatar={avatar} size={120} />
@@ -160,7 +160,9 @@ const ProfileInfo = ({ isCurrentUser, userData }: ProfileInfoProps) => {
           dialogType === "followers" ? isLoadingFollowers : isLoadingFollowing
         }
         isRefetching={
-          dialogType === "followers" ? isRefetchingFollowers : isRefetchingFollowing
+          dialogType === "followers"
+            ? isRefetchingFollowers
+            : isRefetchingFollowing
         }
         followers={
           dialogType === "followers" ? followersList || [] : followingList || []

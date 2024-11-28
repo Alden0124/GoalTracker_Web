@@ -19,7 +19,7 @@ export interface Goal {
   _id: string;
   title: string;
   description: string;
-  status: string;
+  status: GoalStatus;
   startDate: string;
   endDate: string;
   isPublic: boolean;
@@ -33,4 +33,10 @@ export interface Goal {
   };
   createdAt: string;
   updatedAt: string;
+}
+
+export enum GoalStatus {
+  IN_PROGRESS = "進行中",
+  COMPLETED = "已完成",
+  ABANDONED = "未完成",
 }
