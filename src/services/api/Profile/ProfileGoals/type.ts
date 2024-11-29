@@ -33,6 +33,7 @@ export interface Goal {
   };
   createdAt: string;
   updatedAt: string;
+  isLiked: boolean;
 }
 
 export enum GoalStatus {

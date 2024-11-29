@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { AiOutlineHeart } from "react-icons/ai";
 import { FaRegComment } from "react-icons/fa";
 import {
@@ -17,13 +17,14 @@ import {
 import { formatDate } from "@/utils/dateFormat";
 import {
   useDeleteGoal,
+  useLikeGoal,
   useUpdateGoal,
 } from "@/hooks/profile/ProfileGoals/queries/useProfileGoalsQueries";
 import { notification } from "@/utils/notification";
 import GoalDetailsDialog from "./GoalDetailsDialog";
 import GoalFormDialog from "./GoalFormDialog";
 import { GoalFormData } from "@/schemas/goalSchema";
-
+import { debounce } from "@/utils/debounce";
 interface GoalProps {
   goal: GoalType;
   isCurrentUser: boolean;
@@ -70,6 +71,12 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
   const { mutate: updateGoal, isPending: isUpdatePending } = useUpdateGoal();
   // 狀態配置
   const statusConfig = getStatusConfig(goal.status);
+  // 點讚目標query
+  const { mutate: likeGoal } = useLikeGoal();
+  // 對此目標的點讚總數
+  const [localLikeCount, setLocalLikeCount] = useState(goal.likeCount);
+  // 此使用者是否已對此目標點讚
+  const [isLiked, setIsLiked] = useState(goal.isLiked);
 
   // 點擊外部關閉下拉選單
   useEffect(() => {
@@ -113,6 +120,27 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
     });
     setShowUpdateDialog(false);
     setShowMenu(false);
+  };
+
+  const debouncedHandleLikeGoal = useMemo(
+    () =>
+      debounce((goalId: string, isLiked: boolean) => {
+        likeGoal({ goalId, isLiked });
+      }, 3000),
+    []
+  );
+
+  // 點讚目標
+  const handleLikeGoal = async (goalId: string) => {
+    setIsLiked((prev) => {
+      const newIsLiked = !prev;
+      setLocalLikeCount((prevCount) =>
+        newIsLiked ? prevCount + 1 : prevCount - 1
+      );
+      // 傳遞最新的狀態給 API
+      debouncedHandleLikeGoal(goalId, newIsLiked);
+      return newIsLiked;
+    });
   };
 
   return (
@@ -226,16 +254,23 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
         {/* 底部操作欄 */}
         <div className="flex justify-between items-center pt-2 border-t dark:border-gray-700">
           <div className="flex gap-6">
-            <button className="text-gray-500 hover:text-gray-700 flex items-center gap-1">
+            <button
+              onClick={() => handleLikeGoal(goal._id)}
+              className={`flex items-center gap-1 ${
+                isLiked
+                  ? "text-red-500 hover:text-red-700"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
               <AiOutlineHeart className="text-lg" />
-              <span>2</span>
+              <span>{localLikeCount}</span>
             </button>
             <button
               className="text-gray-500 hover:text-gray-700 flex items-center gap-1"
               onClick={() => setShowDetailsDialog(true)}
             >
               <FaRegComment className="text-lg" />
-              <span>1 則留言</span>
+              <span>{goal.commentCount}</span>
             </button>
           </div>
         </div>
