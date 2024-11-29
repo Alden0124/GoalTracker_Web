@@ -1,6 +1,12 @@
-import axiosInstance from "@/services/axiosInstance";
 import { GoalFormData } from "@/schemas/goalSchema";
-import { GetUserGoalsParams, GetUserGoalsResponse } from "./type";
+import axiosInstance from "@/services/axiosInstance";
+import {
+  CreateCommentParams,
+  GetCommentsQuery,
+  GetCommentsResponse,
+  GetUserGoalsParams,
+  GetUserGoalsResponse,
+} from "./type";
 
 export const FETCH_GOAL = {
   // 創建目標
@@ -17,8 +23,8 @@ export const FETCH_GOAL = {
         page: params.page,
         limit: params.limit,
         status: params.status,
-        sort: params.sort
-      }
+        sort: params.sort,
+      },
     }),
 
   // 更新目標
@@ -32,4 +38,23 @@ export const FETCH_GOAL = {
   // 刪除目標
   DeleteGoal: (goalId: string) =>
     axiosInstance.delete(`/goals/deleteGoal/${goalId}`),
+
+  // 創建留言或回覆
+  CreateComment: (goalId: string, data: CreateCommentParams) =>
+    axiosInstance.post(`/goals/createComment/${goalId}`, data),
+
+  // 獲取留言或回覆列表
+  GetComments: (
+    goalId: string,
+    query: GetCommentsQuery
+  ): Promise<GetCommentsResponse> =>
+    axiosInstance.get(`/goals/getComments/${goalId}`, { params: query }),
+
+  // 更新留言或回覆
+  UpdateComment: (commentId: string, content: string) =>
+    axiosInstance.put(`/goals/updateComment/${commentId}`, { content }),
+
+  // 刪除留言或回覆
+  DeleteComment: (commentId: string) =>
+    axiosInstance.delete(`/goals/deleteComment/${commentId}`),
 };

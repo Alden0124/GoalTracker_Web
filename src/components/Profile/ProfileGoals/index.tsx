@@ -1,13 +1,13 @@
-import { useState } from "react";
-import { useParams } from "react-router-dom";
 import Wrapper from "@/components/common/Wrapper";
 import GoalFormDialog from "@/components/Profile/ProfileGoals/components/GoalFormDialog";
-import { GoalFormData } from "@/schemas/goalSchema";
 import {
   useCreateGoal,
   useGetUserGoals,
 } from "@/hooks/profile/ProfileGoals/queries/useProfileGoalsQueries";
+import { GoalFormData } from "@/schemas/goalSchema";
 import { GetUserGoalsParams } from "@/services/api/Profile/ProfileGoals/type";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
 import GoalList from "./components/GoalList";
 
 interface ProfileGoalsProps {
@@ -36,7 +36,7 @@ const ProfileGoals = ({ isCurrentUser }: ProfileGoalsProps) => {
   };
 
   return (
-    <Wrapper className="md:w-[60%] !min-h-[600px] bg-transparent !p-0 border-none">
+    <Wrapper className="md:w-[60%]  bg-transparent !p-0 border-none md:!min-h-[600px]">
       <div className="h-full flex flex-col gap-4">
         {/* 標題區域 */}
         <div className="flex justify-between items-center">
@@ -55,11 +55,11 @@ const ProfileGoals = ({ isCurrentUser }: ProfileGoalsProps) => {
         </div>
 
         {/* 目標列表 */}
-        <div className="h-full space-y-4">
+        <div className=" space-y-4">
           {userGoals && userGoals?.goals.length > 0 ? (
             <GoalList goals={userGoals.goals} isCurrentUser={isCurrentUser} />
           ) : (
-            <div className="h-full flex flex-col items-center justify-center py-8 text-gray-500">
+            <div className="min-h-[300px] flex flex-col items-center justify-center py-8 text-gray-500 md:min-h-[550px] ">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-16 w-16 mb-4"

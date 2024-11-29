@@ -1,5 +1,5 @@
-import axiosInstance from "@/services/axiosInstance";
 import { AuthResponse, SignInResponse } from "@/services/api/auth/type";
+import axiosInstance from "@/services/axiosInstance";
 
 export const FETCH_AUTH = {
   /**
@@ -70,10 +70,8 @@ export const FETCH_AUTH = {
 
   /**
    * 刷新 Token API
-   * @param {object} data - 刷新所需數據
-   * @param {string} data.refreshToken - 刷新令牌
-   * @returns {Promise<AuthResponse>} 返回新的訪問令牌
+   * @returns {Promise<{accessToken: string}>} 返回刷新後的 Token
    */
-  RefreshToken: (data: object) =>
-    axiosInstance.post("/auth/refresh-token", data),
+  RefreshToken: (): Promise<{ accessToken: string }> =>
+    axiosInstance.post("/auth/refresh-token"),
 };

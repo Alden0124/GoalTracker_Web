@@ -1,20 +1,20 @@
-import { useParams } from "react-router-dom";
 import Wrapper from "@/components/common/Wrapper";
-import { Fragment, useState } from "react";
-import { UserProfileResponse } from "@/services/api/Profile/ProfileInfo/type";
 import ProfileAvatar from "@/components/Profile/ProfileInfo/components/ProfileAvatar";
 import ProfileEditDialog from "@/components/Profile/ProfileInfo/components/ProfileEditDialog";
-import { IoLocationOutline, IoSchoolOutline } from "react-icons/io5";
-import { MdOutlineWork } from "react-icons/md";
-import renderInfoItem from "./components/renderInfoItem";
-import { GET_COOKIE } from "@/utils/cookies";
-import FollowListDialog from "./components/FollowListDialog";
 import {
   useFollowUser,
-  useUnfollowUser,
   useGetFollowers,
   useGetFollowing,
+  useUnfollowUser,
 } from "@/hooks/profile/ProfileInfo/queries/useProfileProfileInfoQueries";
+import { UserProfileResponse } from "@/services/api/Profile/ProfileInfo/type";
+import { GET_COOKIE } from "@/utils/cookies";
+import { Fragment, useState } from "react";
+import { IoLocationOutline, IoSchoolOutline } from "react-icons/io5";
+import { MdOutlineWork } from "react-icons/md";
+import { useParams } from "react-router-dom";
+import FollowListDialog from "./components/FollowListDialog";
+import renderInfoItem from "./components/renderInfoItem";
 
 interface ProfileInfoProps {
   isCurrentUser: boolean;

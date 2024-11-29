@@ -19,4 +19,4 @@ export function debounce<T extends AnyFunction>(func: T, delay: number) {
       func(...args);
     }, delay);
   };
-} 
+}

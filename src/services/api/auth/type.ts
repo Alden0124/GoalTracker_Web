@@ -11,6 +11,6 @@ export interface SignInResponse extends AuthResponse {
     email?: string;
     avatar?: string;
     isEmailVerified: boolean;
-    providers?: Array<'google' | 'line'>
+    providers?: Array<"google" | "line">;
   };
 }

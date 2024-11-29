@@ -1,30 +1,30 @@
-import { useState, useRef, useEffect, useMemo } from "react";
-import { AiOutlineHeart } from "react-icons/ai";
-import { FaRegComment } from "react-icons/fa";
-import {
-  BsCalendarPlus,
-  BsCalendarCheck,
-  BsThreeDots,
-  BsCheckCircle,
-  BsXCircle,
-  BsPlayCircle,
-} from "react-icons/bs";
-import Dialog from "@/components/common/Dialog";
-import {
-  Goal as GoalType,
-  GoalStatus,
-} from "@/services/api/Profile/ProfileGoals/type";
-import { formatDate } from "@/utils/dateFormat";
 import {
   useDeleteGoal,
   useLikeGoal,
   useUpdateGoal,
 } from "@/hooks/profile/ProfileGoals/queries/useProfileGoalsQueries";
+import { GoalFormData } from "@/schemas/goalSchema";
+import {
+  GoalStatus,
+  Goal as GoalType,
+} from "@/services/api/Profile/ProfileGoals/type";
+import { formatDate } from "@/utils/dateFormat";
+import { debounce } from "@/utils/debounce";
 import { notification } from "@/utils/notification";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { AiOutlineHeart } from "react-icons/ai";
+import {
+  BsCalendarCheck,
+  BsCalendarPlus,
+  BsCheckCircle,
+  BsPlayCircle,
+  BsThreeDots,
+  BsXCircle,
+} from "react-icons/bs";
+import { FaRegComment } from "react-icons/fa";
 import GoalDetailsDialog from "./GoalDetailsDialog";
 import GoalFormDialog from "./GoalFormDialog";
-import { GoalFormData } from "@/schemas/goalSchema";
-import { debounce } from "@/utils/debounce";
+
 interface GoalProps {
   goal: GoalType;
   isCurrentUser: boolean;
@@ -54,8 +54,9 @@ const getStatusConfig = (status: GoalStatus) => {
   }
 };
 
+// 使用 memo 包裝組件
 const Goal = ({ goal, isCurrentUser }: GoalProps) => {
-  const [activeTab, setActiveTab] = useState<"progress" | "comments">(
+  const [activeTab, setActiveTab] = useState<"progress" | "comment">(
     "progress"
   );
   // 編輯目標Dialog
@@ -65,30 +66,34 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
   // 下拉選單
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  // 刪除目標query
-  const { mutate: deleteGoal } = useDeleteGoal();
-  // 更新目標query
-  const { mutate: updateGoal, isPending: isUpdatePending } = useUpdateGoal();
-  // 狀態配置
-  const statusConfig = getStatusConfig(goal.status);
-  // 點讚目標query
-  const { mutate: likeGoal } = useLikeGoal();
   // 對此目標的點讚總數
   const [localLikeCount, setLocalLikeCount] = useState(goal.likeCount);
   // 此使用者是否已對此目標點讚
   const [isLiked, setIsLiked] = useState(goal.isLiked);
+  // 刪除目標query
+  const { mutate: deleteGoal } = useDeleteGoal();
+  // 更新目標query
+  const { mutate: updateGoal, isPending: isUpdatePending } = useUpdateGoal();
+  // 點讚目標query
+  const { mutate: likeGoal } = useLikeGoal();
+  // 狀態配置
+  const statusConfig = getStatusConfig(goal.status);
 
   // 點擊外部關閉下拉選單
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+      if (
+        showMenu &&
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node)
+      ) {
         setShowMenu(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [showMenu, setShowMenu]);
 
   // 刪除目標
   const handleDeleteGoal = async () => {
@@ -122,7 +127,8 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
     setShowMenu(false);
   };
 
-  const debouncedHandleLikeGoal = useMemo(
+  // 確保 debounce 函數只創建一次
+  const debouncedLike = useMemo(
     () =>
       debounce((goalId: string, isLiked: boolean) => {
         likeGoal({ goalId, isLiked });
@@ -131,16 +137,15 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
   );
 
   // 點讚目標
-  const handleLikeGoal = async (goalId: string) => {
-    setIsLiked((prev) => {
-      const newIsLiked = !prev;
-      setLocalLikeCount((prevCount) =>
-        newIsLiked ? prevCount + 1 : prevCount - 1
-      );
-      // 傳遞最新的狀態給 API
-      debouncedHandleLikeGoal(goalId, newIsLiked);
-      return newIsLiked;
-    });
+  const handleLikeGoal = (goalId: string) => {
+    const newIsLiked = !isLiked;
+
+    // 批量更新狀態
+    setIsLiked(newIsLiked);
+    setLocalLikeCount((prev) => (newIsLiked ? prev + 1 : prev - 1));
+
+    // 執行新的 debounce
+    debouncedLike(goalId, newIsLiked);
   };
 
   return (
@@ -241,11 +246,11 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
           {/* 留言 */}
           <button
             className={`flex-1 py-2 text-center rounded-lg ${
-              activeTab === "comments"
+              activeTab === "comment"
                 ? "bg-blue-500 text-white"
                 : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
-            onClick={() => setActiveTab("comments")}
+            onClick={() => setActiveTab("comment")}
           >
             留言
           </button>
@@ -262,7 +267,9 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
                   : "text-gray-500 hover:text-gray-700"
               }`}
             >
-              <AiOutlineHeart className="text-lg" />
+              <AiOutlineHeart
+                className={`text-lg ${isLiked ? "fill-current" : ""}`}
+              />
               <span>{localLikeCount}</span>
             </button>
             <button
@@ -270,7 +277,11 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
               onClick={() => setShowDetailsDialog(true)}
             >
               <FaRegComment className="text-lg" />
-              <span>{goal.commentCount}</span>
+              <span>
+                {activeTab === "comment"
+                  ? goal.commentCount
+                  : goal.progressCommentCount}
+              </span>
             </button>
           </div>
         </div>
@@ -285,18 +296,14 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
         goal={goal}
       />
 
-      {/* 詳細資訊   */}
-      <Dialog
-        isOpen={showDetailsDialog}
-        onClose={() => setShowDetailsDialog(false)}
-        title="詳細資訊"
-      >
+      {showDetailsDialog && (
         <GoalDetailsDialog
-          goal={goal}
+          goalId={goal._id}
+          isOpen={showDetailsDialog}
+          onClose={() => setShowDetailsDialog(false)}
           activeTab={activeTab}
-          setActiveTab={setActiveTab}
         />
-      </Dialog>
+      )}
     </>
   );
 };

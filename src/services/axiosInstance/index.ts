@@ -1,11 +1,10 @@
-import axios, { 
-  InternalAxiosRequestConfig,
-  AxiosHeaders 
-} from "axios";
-import { GET_COOKIE, REMOVE_COOKIE } from "@/utils/cookies";
+import { store } from "@/stores";
+import { finishLoading, startLoading } from "@/stores/slice/loadingReducer";
+import { signOut } from "@/stores/slice/userReducer";
+import { GET_COOKIE, SET_COOKIE } from "@/utils/cookies";
+import axios, { AxiosHeaders, InternalAxiosRequestConfig } from "axios";
+import { FETCH_AUTH } from "../api/auth";
 import { ApiError } from "./type";
-import { store } from '@/stores';
-import { startLoading, finishLoading } from '@/stores/slice/loadingReducer';
 
 const isProd = window.location.hostname !== "localhost";
 
@@ -21,10 +20,10 @@ const instance = axios.create({
   withCredentials: true,
   headers: {
     ...(isProd && {
-      "Accept": "application/json",
-      "X-Requested-With": "XMLHttpRequest"
-    })
-  }
+      Accept: "application/json",
+      "X-Requested-With": "XMLHttpRequest",
+    }),
+  },
 });
 
 // 追蹤請求數量
@@ -32,7 +31,7 @@ let pendingRequests = 0;
 
 const handleStartLoading = () => {
   pendingRequests++;
-  
+
   // 如果是第一個請求，才觸發 loading
   if (pendingRequests === 1) {
     store.dispatch(startLoading());
@@ -41,7 +40,7 @@ const handleStartLoading = () => {
 
 const handleStopLoading = () => {
   pendingRequests = Math.max(0, pendingRequests - 1);
-  
+
   // 只有當所有請求都完成時，才關閉 loading
   if (pendingRequests === 0) {
     store.dispatch(finishLoading());
@@ -51,32 +50,32 @@ const handleStopLoading = () => {
 // 請求攔截器
 instance.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    if (config.headers?.['skip-loading'] !== 'true') {
+    if (config.headers?.["skip-loading"] !== "true") {
       handleStartLoading();
     }
-    
+
     const currentLang = localStorage.getItem("language") || "zh-TW";
-    
+
     if (!(config.headers instanceof AxiosHeaders)) {
       config.headers = new AxiosHeaders(config.headers);
     }
 
-    config.headers.set('Accept-Language', currentLang);
-    
-    if (!config.headers.get('Content-Type')) {
-      config.headers.set('Content-Type', 'application/json');
+    config.headers.set("Accept-Language", currentLang);
+
+    if (!config.headers.get("Content-Type")) {
+      config.headers.set("Content-Type", "application/json");
     }
-    
+
     const token = GET_COOKIE() || false;
     if (token) {
-      config.headers.set('Authorization', `Bearer ${token}`);
+      config.headers.set("Authorization", `Bearer ${token}`);
     }
 
     return config;
   },
   (error) => {
     handleStopLoading();
-    console.error('請求攔截器錯誤:', error);
+    console.error("請求攔截器錯誤:", error);
     return Promise.reject(error);
   }
 );
@@ -84,25 +83,31 @@ instance.interceptors.request.use(
 // 響應攔截器
 instance.interceptors.response.use(
   (response) => {
-    if (response.config.headers?.['skip-loading'] !== 'true') {
+    if (response.config.headers?.["skip-loading"] !== "true") {
       handleStopLoading();
     }
     return response.data;
   },
-  (error) => {
-    if (error.config?.headers?.['skip-loading'] !== 'true') {
+  async (error) => {
+    if (error.config?.headers?.["skip-loading"] !== "true") {
       handleStopLoading();
     }
     if (error.response) {
-      console.error('完整錯誤信息:', {
+      console.error("完整錯誤信息:", {
         status: error.response.status,
         headers: error.response.headers,
-        data: error.response.data
+        data: error.response.data,
       });
-      
+
       switch (error.response.status) {
         case 401:
-          REMOVE_COOKIE();
+          try {
+            const resp = await FETCH_AUTH.RefreshToken();
+            SET_COOKIE(resp.accessToken);
+          } catch (error) {
+            store.dispatch(signOut());
+            window.location.href = "/auth/signIn";
+          }
           // 可以添加重定向邏輯
           break;
         // ... 其他錯誤處理 ...
@@ -111,7 +116,7 @@ instance.interceptors.response.use(
     return Promise.reject<ApiError>({
       respData: error.response?.data,
       errorMessage: error.response?.data?.message,
-      status: error.response?.status
+      status: error.response?.status,
     });
   }
 );

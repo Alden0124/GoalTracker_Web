@@ -1,14 +1,15 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { FETCH_GOAL } from "@/services/api/Profile/ProfileGoals";
 import { GoalFormData } from "@/schemas/goalSchema";
-import { queryKeys } from "./queryKeys";
-import { useQueryClient } from "@tanstack/react-query";
-import { notification } from "@/utils/notification";
+import { FETCH_GOAL } from "@/services/api/Profile/ProfileGoals";
 import {
+  CreateCommentParams,
+  GetCommentsQuery,
   GetUserGoalsParams,
   GoalStatus,
 } from "@/services/api/Profile/ProfileGoals/type";
 import { handleError } from "@/utils/errorHandler";
+import { notification } from "@/utils/notification";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "./queryKeys";
 
 interface UpdateGoalData extends GoalFormData {
   status?: GoalStatus;
@@ -37,24 +38,6 @@ export const useCreateGoal = () => {
   });
 };
 
-// 刪除目標
-export const useDeleteGoal = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: (goalId: string) => FETCH_GOAL.DeleteGoal(goalId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.goals.getUserGoals(),
-      });
-      notification.success({ title: "目標刪除成功" });
-    },
-    onError: (error: any) => {
-      handleError(error, "刪除目標失敗");
-    },
-  });
-};
-
 // 更新目標
 export const useUpdateGoal = () => {
   const queryClient = useQueryClient();
@@ -77,6 +60,24 @@ export const useGetUserGoals = (userId: string, params: GetUserGoalsParams) => {
     queryKey: queryKeys.goals.getUserGoals(userId),
     queryFn: () => FETCH_GOAL.GetUserGoals(userId, params),
     enabled: !!userId,
+  });
+};
+
+// 刪除目標
+export const useDeleteGoal = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (goalId: string) => FETCH_GOAL.DeleteGoal(goalId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.goals.getUserGoals(),
+      });
+      notification.success({ title: "目標刪除成功" });
+    },
+    onError: (error: any) => {
+      handleError(error, "刪除目標失敗");
+    },
   });
 };
 
@@ -142,6 +143,81 @@ export const useLikeGoal = () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.goals.getUserGoals(),
       });
+    },
+  });
+};
+
+// 創建留言或回覆
+export const useCreateComment = (goalId: string, query: GetCommentsQuery) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: CreateCommentParams) =>
+      FETCH_GOAL.CreateComment(goalId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.goals.getUserGoals(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.goals.getComments(goalId, query),
+      });
+    },
+    onError: (error: any) => {
+      handleError(error, "留言或回覆創建失敗");
+    },
+  });
+};
+
+// 獲取留言或回覆列表
+export const useGetComments = (goalId: string, query: GetCommentsQuery) => {
+  return useQuery({
+    queryKey: queryKeys.goals.getComments(goalId, query),
+    queryFn: () => FETCH_GOAL.GetComments(goalId, query),
+    enabled: !!goalId,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    staleTime: 5 * 60 * 1000, // 5分鐘後數據過期
+  });
+};
+
+// 更新留言或回覆
+export const useUpdateComent = (goalId: string, query: GetCommentsQuery) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      commentId,
+      content,
+    }: {
+      commentId: string;
+      content: string;
+    }) => FETCH_GOAL.UpdateComment(commentId, content),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.goals.getComments(goalId, query),
+      });
+      notification.success({ title: "留言或回覆更新成功" });
+    },
+    onError: (error: any) => {
+      handleError(error, "留言或回覆更新失敗");
+    },
+  });
+};
+
+// 刪除留言或回覆
+export const useDeleteComent = (goalId: string, query: GetCommentsQuery) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (commentId: string) => FETCH_GOAL.DeleteComment(commentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.goals.getComments(goalId, query),
+      });
+      notification.success({ title: "留言或回覆刪除成功" });
+    },
+    onError: (error: any) => {
+      handleError(error, "留言或回覆刪除失敗");
     },
   });
 };

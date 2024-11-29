@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { useNavigate, useLocation, Outlet } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 // redux
-import { useAppSelector } from "@/hooks/common/useAppReduxs";
-import { selectIsAuthenticated } from "@/stores/slice/userReducer";
+import { useAppDispatch, useAppSelector } from "@/hooks/common/useAppReduxs";
+import { selectIsAuthenticated, signOut } from "@/stores/slice/userReducer";
 // alert
 import { notification } from "@/utils/notification";
 // hooks
@@ -15,14 +15,19 @@ interface ProtectedRouteProps {
 }
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const { isError, isLoading } = useCurrentUser();
 
   useEffect(() => {
+    const token = GET_COOKIE();
+    if (!token) {
+      dispatch(signOut());
+    }
+
     // 如果正在全局加載中，先不做任何路由判斷
     if (isLoading) return;
-    const token = GET_COOKIE();
 
     // 1. 已登入不可訪問的頁面
     const authOnlyPaths = [

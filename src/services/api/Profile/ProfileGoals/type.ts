@@ -1,3 +1,4 @@
+// 獲取用戶目標列表參數
 export interface GetUserGoalsParams {
   page?: number;
   limit?: number;
@@ -5,6 +6,7 @@ export interface GetUserGoalsParams {
   sort?: string;
 }
 
+// 獲取用戶目標列表響應
 export interface GetUserGoalsResponse {
   goals: Goal[];
   pagination: {
@@ -15,6 +17,7 @@ export interface GetUserGoalsResponse {
   message: string;
 }
 
+// 目標
 export interface Goal {
   _id: string;
   title: string;
@@ -27,8 +30,8 @@ export interface Goal {
   progressCommentCount: number;
   commentCount: number;
   user: {
-      _id: string;
-      username: string;
+    _id: string;
+    username: string;
     avatar: string;
   };
   createdAt: string;
@@ -36,8 +39,50 @@ export interface Goal {
   isLiked: boolean;
 }
 
+// 目標狀態
 export enum GoalStatus {
   IN_PROGRESS = "進行中",
   COMPLETED = "已完成",
   ABANDONED = "未完成",
+}
+
+// 創建留言或回覆參數
+export interface CreateCommentParams {
+  content: string;
+  parentId?: string;
+  type: "comment" | "progress";
+}
+
+// 獲取留言或回覆列表參數
+export interface GetCommentsQuery {
+  page?: number;
+  limit?: number;
+  parentId?: string;
+  type?: "comment" | "progress";
+}
+
+// 獲取留言或回覆列表響應
+export interface GetCommentsResponse {
+  comments: {
+    _id: string;
+    user: {
+      _id: string;
+      username: string;
+      avatar: string;
+    };
+    goal: string;
+    content: string;
+    parentId: string | null;
+    replyCount: number;
+    type: "comment" | "progress";
+    createdAt: string;
+    updatedAt: string;
+    __v: number;
+  }[];
+  pagination: {
+    current: number;
+    size: number;
+    total: number;
+  };
+  message: string;
 }
