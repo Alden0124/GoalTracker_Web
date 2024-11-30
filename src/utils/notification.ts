@@ -7,6 +7,7 @@ interface NotificationOptions {
   text?: string;
   timer?: number;
   showConfirmButton?: boolean;
+  target?: string;
 }
 
 export const notification = {
@@ -21,6 +22,7 @@ export const notification = {
       showConfirmButton: options.showConfirmButton ?? true,
       confirmButtonText: "確定",
       confirmButtonColor: "#3085d6",
+      target: options.target || "body", // 設置顯示容器
     });
   },
 
@@ -60,6 +62,10 @@ export const notification = {
       cancelButtonColor: "#d33",
       confirmButtonText: "確定",
       cancelButtonText: "取消",
+      target: options.target || "body",
+      customClass: {
+        container: "swal2-container-custom", // 添加自定義類名
+      },
     });
   },
-}; 
+};

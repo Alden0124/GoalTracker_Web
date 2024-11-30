@@ -1,10 +1,10 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { FETCH_USER_PROFILE } from "@/services/api/Profile/ProfileInfo";
 import { useAppDispatch } from "@/hooks/common/useAppReduxs";
+import { FETCH_USER_PROFILE } from "@/services/api/Profile/ProfileInfo";
 import { setUserInfo } from "@/stores/slice/userReducer";
 import { GET_COOKIE } from "@/utils/cookies";
-import { queryKeys } from "./queryKeys";
 import { notification } from "@/utils/notification";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "./queryKeys";
 
 // 獲取當前用戶資料
 export const useCurrentUser = (options = {}) => {
@@ -134,11 +134,15 @@ export const useUnfollowUser = () => {
 /**
  * 獲取粉絲列表，每次調用時都會重新獲取數據
  */
-export const useGetFollowers = (userId: string, isOpen: boolean, options = {}) => {
+export const useGetFollowers = (
+  userId: string,
+  isOpen: boolean,
+  options = {}
+) => {
   return useQuery({
     queryKey: [queryKeys.users.followers(userId), isOpen],
     queryFn: async () => {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       const response = await FETCH_USER_PROFILE.GetFollowers(userId);
       return response.followers;
     },
@@ -153,11 +157,15 @@ export const useGetFollowers = (userId: string, isOpen: boolean, options = {}) =
 /**
  * 獲取追蹤者列表，每次調用時都會重新獲取數據
  */
-export const useGetFollowing = (userId: string, isOpen: boolean, options = {}) => {
+export const useGetFollowing = (
+  userId: string,
+  isOpen: boolean,
+  options = {}
+) => {
   return useQuery({
     queryKey: [queryKeys.users.following(userId), isOpen],
     queryFn: async () => {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       const response = await FETCH_USER_PROFILE.GetFollowing(userId);
       return response.following;
     },

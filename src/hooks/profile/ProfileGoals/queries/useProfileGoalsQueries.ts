@@ -168,21 +168,31 @@ export const useCreateComment = (goalId: string, query: GetCommentsQuery) => {
   });
 };
 
-// 獲取留言或回覆列表
+// 獲取留言列表
 export const useGetComments = (goalId: string, query: GetCommentsQuery) => {
   return useQuery({
     queryKey: queryKeys.goals.getComments(goalId, query),
     queryFn: () => FETCH_GOAL.GetComments(goalId, query),
     enabled: !!goalId,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
-    staleTime: 5 * 60 * 1000, // 5分鐘後數據過期
+    staleTime: 0, // 立即將數據標記為過期
+  });
+};
+
+// 獲取回覆列表
+export const useGetReplies = (
+  goalId: string,
+  query: GetCommentsQuery,
+  options?: { enabled?: boolean }
+) => {
+  return useQuery({
+    queryKey: queryKeys.goals.getComments(goalId, query),
+    queryFn: () => FETCH_GOAL.GetComments(goalId, query),
+    enabled: !!goalId && (options?.enabled ?? false), // 默認為 false，除非明確啟用
   });
 };
 
 // 更新留言或回覆
-export const useUpdateComent = (goalId: string, query: GetCommentsQuery) => {
+export const useUpdateComment = (goalId: string, query: GetCommentsQuery) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
@@ -196,7 +206,6 @@ export const useUpdateComent = (goalId: string, query: GetCommentsQuery) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.goals.getComments(goalId, query),
       });
-      notification.success({ title: "留言或回覆更新成功" });
     },
     onError: (error: any) => {
       handleError(error, "留言或回覆更新失敗");
@@ -205,7 +214,7 @@ export const useUpdateComent = (goalId: string, query: GetCommentsQuery) => {
 };
 
 // 刪除留言或回覆
-export const useDeleteComent = (goalId: string, query: GetCommentsQuery) => {
+export const useDeleteComment = (goalId: string, query: GetCommentsQuery) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -214,7 +223,9 @@ export const useDeleteComent = (goalId: string, query: GetCommentsQuery) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.goals.getComments(goalId, query),
       });
-      notification.success({ title: "留言或回覆刪除成功" });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.goals.getUserGoals(),
+      });
     },
     onError: (error: any) => {
       handleError(error, "留言或回覆刪除失敗");

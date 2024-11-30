@@ -152,7 +152,7 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
     <>
       <div
         key={goal._id}
-        className="bg-white dark:bg-background-dark rounded-lg p-5 space-y-4"
+        className="bg-white dark:bg-background-dark rounded-lg p-5 space-y-4 border"
       >
         {/* 標題和描述 */}
         <div className="flex justify-between items-start">
@@ -302,6 +302,7 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
           isOpen={showDetailsDialog}
           onClose={() => setShowDetailsDialog(false)}
           activeTab={activeTab}
+          isCurrentUser={isCurrentUser}
         />
       )}
     </>

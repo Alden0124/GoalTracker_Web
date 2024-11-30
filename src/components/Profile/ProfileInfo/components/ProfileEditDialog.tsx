@@ -1,12 +1,12 @@
 import Dialog from "@/components/common/Dialog";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { profileSchema, type ProfileFormData } from "@/schemas/profileSchema";
-import Input from "@/components/ui/Input";
-import { UserProfileResponse } from "@/services/api/Profile/ProfileInfo/type";
 import ProfileAvatarUpload from "@/components/Profile/ProfileInfo/components/ProfileAvatarUpload";
-import { useState } from "react";
+import Input from "@/components/ui/Input";
 import { useUpdateProfile } from "@/hooks/profile/ProfileInfo/queries/useProfileProfileInfoQueries";
+import { profileSchema, type ProfileFormData } from "@/schemas/profileSchema";
+import { UserProfileResponse } from "@/services/api/Profile/ProfileInfo/type";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 interface ProfileEditDialogProps {
   isOpen: boolean;
@@ -36,10 +36,10 @@ const ProfileEditDialog = ({
     },
   });
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = async (data: ProfileFormData) => {
     try {
       const formData = new FormData();
-      
+
       formData.append("username", data.username);
       formData.append("location", data.location || "");
       formData.append("occupation", data.occupation || "");
@@ -47,32 +47,32 @@ const ProfileEditDialog = ({
 
       if (avatarFile) {
         formData.append("avatar", avatarFile);
-        
-        console.log('Avatar file details:', {
+
+        console.log("Avatar file details:", {
           name: avatarFile.name,
           type: avatarFile.type,
           size: avatarFile.size,
-          lastModified: avatarFile.lastModified
+          lastModified: avatarFile.lastModified,
         });
       }
 
       for (let [key, value] of formData.entries()) {
         console.log(`FormData entry - ${key}:`, value);
       }
-      
+
       await updateProfile.mutateAsync(formData);
       onClose();
     } catch (error) {
-      console.error('上傳失敗:', error);
+      console.error("上傳失敗:", error);
       if (error instanceof Error) {
-        console.error('錯誤詳情:', error.message);
+        console.error("錯誤詳情:", error.message);
       }
     }
-  });
+  };
 
   return (
     <Dialog isOpen={isOpen} onClose={onClose} title="編輯個人資料">
-      <form onSubmit={onSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* 頭像上傳區域 */}
         <div className="flex flex-col items-center gap-2 mb-4">
           <ProfileAvatarUpload
@@ -115,8 +115,8 @@ const ProfileEditDialog = ({
           >
             取消
           </button>
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="btn-primary"
             disabled={updateProfile.isPending}
           >

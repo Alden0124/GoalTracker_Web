@@ -22,6 +22,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
 
   useEffect(() => {
     const token = GET_COOKIE();
+
     if (!token) {
       dispatch(signOut());
     }
@@ -80,7 +81,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     // 未登入用戶訪問需要登入的頁面或個人資料頁面
     if (!isAuthenticated && (isProtectedPath || isProfileDetailPath)) {
       navigate("/auth/signIn", {
-        state: { from: location.pathname },
+        // state: { from: location.pathname },
         replace: true,
       });
       return;

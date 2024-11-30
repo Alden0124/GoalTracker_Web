@@ -63,26 +63,29 @@ export interface GetCommentsQuery {
 
 // 獲取留言或回覆列表響應
 export interface GetCommentsResponse {
-  comments: {
-    _id: string;
-    user: {
-      _id: string;
-      username: string;
-      avatar: string;
-    };
-    goal: string;
-    content: string;
-    parentId: string | null;
-    replyCount: number;
-    type: "comment" | "progress";
-    createdAt: string;
-    updatedAt: string;
-    __v: number;
-  }[];
+  comments: Comment[];
   pagination: {
     current: number;
     size: number;
     total: number;
   };
   message: string;
+}
+
+// 留言或回覆
+export interface Comment {
+  _id: string;
+  user: {
+    _id: string;
+    username: string;
+    avatar: string;
+  };
+  goal: string;
+  content: string;
+  parentId: string | null;
+  replyCount: number;
+  type: "comment" | "progress";
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 }

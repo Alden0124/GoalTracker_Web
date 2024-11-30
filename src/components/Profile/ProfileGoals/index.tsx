@@ -5,7 +5,7 @@ import {
   useGetUserGoals,
 } from "@/hooks/profile/ProfileGoals/queries/useProfileGoalsQueries";
 import { GoalFormData } from "@/schemas/goalSchema";
-import { GetUserGoalsParams } from "@/services/api/Profile/ProfileGoals/type";
+import { DEFAULT_GOALS_PARAMS } from "@/services/api/Profile/ProfileGoals/common";
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import GoalList from "./components/GoalList";
@@ -19,16 +19,11 @@ const ProfileGoals = ({ isCurrentUser }: ProfileGoalsProps) => {
   const { mutate: createGoal, isPending: isCreatePending } = useCreateGoal();
   const { id: userId } = useParams();
 
-  // 設置分頁參數
-  const params: GetUserGoalsParams = {
-    page: 1,
-    limit: 10,
-    sort: "-createdAt",
-    status: "",
-  };
-
   // 獲取用戶的目標列表
-  const { data: userGoals, isLoading } = useGetUserGoals(userId || "", params);
+  const { data: userGoals, isLoading } = useGetUserGoals(
+    userId || "",
+    DEFAULT_GOALS_PARAMS
+  );
 
   // 新增目標
   const handleSubmit = (data: GoalFormData) => {
@@ -36,7 +31,7 @@ const ProfileGoals = ({ isCurrentUser }: ProfileGoalsProps) => {
   };
 
   return (
-    <Wrapper className="md:w-[60%]  bg-transparent !p-0 border-none md:!min-h-[600px]">
+    <Wrapper className="md:w-[60%]  dark:bg-transparent !p-0 border-none md:!min-h-[600px]">
       <div className="h-full flex flex-col gap-4">
         {/* 標題區域 */}
         <div className="flex justify-between items-center">
