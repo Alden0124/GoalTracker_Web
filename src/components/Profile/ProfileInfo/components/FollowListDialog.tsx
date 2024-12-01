@@ -1,13 +1,13 @@
 import Dialog from "@/components/common/Dialog";
-import { IoPersonOutline } from "react-icons/io5";
-import { FollowList } from "../type";
-import FollowListDialogSkeleton from "../skeleton/FollowListDialogSkeleton";
-import ProfileAvatar from "./ProfileAvatar";
 import { useUnfollowUser } from "@/hooks/profile/ProfileInfo/queries/useProfileProfileInfoQueries";
 import { FETCH_USER_PROFILE } from "@/services/api/Profile/ProfileInfo";
-import { useNavigate, useParams } from "react-router-dom";
-import { notification } from "@/utils/notification";
 import { handleError } from "@/utils/errorHandler";
+import { notification } from "@/utils/notification";
+import { IoPersonOutline } from "react-icons/io5";
+import { useNavigate, useParams } from "react-router-dom";
+import FollowListDialogSkeleton from "../skeleton/FollowListDialogSkeleton";
+import { FollowList } from "../type";
+import ProfileAvatar from "./ProfileAvatar";
 
 interface FollowListDialogProps {
   isOpen: boolean;
@@ -82,7 +82,9 @@ const FollowListDialog = ({
                 ) : (
                   <ProfileAvatar avatar={follower.avatar} size={40} />
                 )}
-                <span className="font-medium">{follower.username}</span>
+                <span className="font-medium text-foreground-light dark:text-foreground-dark">
+                  {follower.username}
+                </span>
               </button>
               <button
                 onClick={() => handleUnfollow(follower.id)}

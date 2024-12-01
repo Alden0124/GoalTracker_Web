@@ -151,6 +151,7 @@ export const useLikeGoal = () => {
 export const useCreateComment = (
   goalId: string,
   userId: string,
+  userAvatar: string,
   query: GetCommentsQuery
 ) => {
   const queryClient = useQueryClient();
@@ -158,17 +159,84 @@ export const useCreateComment = (
   return useMutation({
     mutationFn: (params: CreateCommentParams) =>
       FETCH_GOAL.CreateComment(goalId, params),
-    onSuccess: (_, variables) => {
-      // 重新獲取主留言列表
+
+    onMutate: async (newComment) => {
+      // 取消正在進行的查詢
+      await queryClient.cancelQueries({
+        queryKey: queryKeys.goals.getReplies(goalId, {
+          ...query,
+          parentId: newComment.parentId,
+        }),
+      });
+
+      // 獲取之前的數據
+      const previousReplies = queryClient.getQueryData(
+        queryKeys.goals.getReplies(goalId, {
+          ...query,
+          parentId: newComment.parentId,
+        })
+      );
+
+      // 樂觀更新回覆列表
+      if (newComment.parentId) {
+        queryClient.setQueryData(
+          queryKeys.goals.getReplies(goalId, {
+            ...query,
+            parentId: newComment.parentId,
+          }),
+          (old: any) => {
+            if (!old) return old;
+
+            const optimisticComment = {
+              _id: "temp-id-" + Date.now(),
+              content: newComment.content,
+              createdAt: new Date().toISOString(),
+              user: {
+                _id: userId,
+                avatar: userAvatar,
+                // 這裡需要添加其他必要的用戶信息
+              },
+              parentId: newComment.parentId,
+              replyCount: 0,
+            };
+
+            return {
+              ...old,
+              comments: [...(old.comments || []), optimisticComment],
+            };
+          }
+        );
+      }
+
+      return { previousReplies };
+    },
+
+    onError: (err, newComment, context) => {
+      // 如果失敗，回滾到之前的狀態
+      if (newComment.parentId && context?.previousReplies) {
+        queryClient.setQueryData(
+          queryKeys.goals.getReplies(goalId, {
+            ...query,
+            parentId: newComment.parentId,
+          }),
+          context.previousReplies
+        );
+      }
+      // 顯示錯誤訊息
+      notification.error({
+        title: "留言失敗",
+        text: "請稍後再試",
+      });
+    },
+
+    onSettled: (_, __, variables) => {
+      // 重新獲取最新數據
       queryClient.invalidateQueries({
         queryKey: queryKeys.goals.getComments(goalId, query),
       });
-      // 重新獲取用戶的目標列表
       queryClient.invalidateQueries({
         queryKey: queryKeys.goals.getUserGoals(userId),
       });
-
-      // 如果是回覆，同時重新獲取該留言的回覆列表
       if (variables.parentId) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.goals.getReplies(goalId, {

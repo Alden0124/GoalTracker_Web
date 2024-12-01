@@ -1,3 +1,5 @@
+import { useAppSelector } from "@/hooks/common/useAppReduxs";
+import { useMinimumLoadingTime } from "@/hooks/common/useMinimumLoadingTime";
 import {
   useCreateComment,
   useDeleteComment,
@@ -10,6 +12,7 @@ import {
   Comment,
   CreateCommentParams,
 } from "@/services/api/Profile/ProfileGoals/type";
+import { selectUserProFile } from "@/stores/slice/userReducer";
 import { formatDate, formatTime } from "@/utils/dateFormat";
 import { notification } from "@/utils/notification";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -49,10 +52,12 @@ const CommentItem = ({
   const [showReplies, setShowReplies] = useState(false);
   // 點擊回覆
   const [isReplying, setIsReplying] = useState(false);
+  // 用戶資訊
+  const userInfo = useAppSelector(selectUserProFile);
 
   // 新增留言或回覆 API hooks
   const { mutate: createComment, isPending: isCreatingComment } =
-    useCreateComment(goalId || "", comment.user._id, {
+    useCreateComment(goalId || "", userInfo.id, userInfo.avatar || "", {
       ...DEFAULT_COMMENTS_PARAMS,
       type: activeTab,
     });
@@ -78,10 +83,14 @@ const CommentItem = ({
   });
 
   // 刪除留言或回覆 API hooks
-  const { mutate: deleteComment } = useDeleteComment(goalId, comment.user._id, {
+  const { mutate: deleteComment } = useDeleteComment(goalId, userInfo.id, {
     ...DEFAULT_COMMENTS_PARAMS,
     type: activeTab,
   });
+
+  // 使用 useMinimumLoadingTime 來延遲顯示骨架屏
+  const isRepliesDataMinimumLoadingTime =
+    useMinimumLoadingTime(isRepliesLoading);
 
   // 自動調整文字框高度
   useEffect(() => {
@@ -149,7 +158,6 @@ const CommentItem = ({
   const handleDelete = async () => {
     const confirm = await notification.confirm({
       title: "確定要刪除這則留言嗎？",
-      target: "#portal-dialog > div",
     });
     if (confirm.isConfirmed) {
       deleteComment({
@@ -237,7 +245,7 @@ const CommentItem = ({
                 </div>
 
                 {/* 當前用戶且不是編輯狀態時顯示選單 */}
-                {isCurrentUser && !isEditing && (
+                {userInfo.id === comment.user._id && !isEditing && (
                   <div className="relative" ref={menuRef}>
                     <button
                       type="button"
@@ -276,12 +284,8 @@ const CommentItem = ({
         {showReplies && (
           <div className="mt-2 ml-12">
             {/* 回覆列表 */}
-            {isRepliesLoading ? (
-              <>
-                <CommentSkeleton />
-                <CommentSkeleton />
-                <CommentSkeleton />
-              </>
+            {isRepliesDataMinimumLoadingTime ? (
+              <CommentSkeleton />
             ) : (
               repliesData?.comments.map((reply) => (
                 <CommentItem
@@ -293,9 +297,6 @@ const CommentItem = ({
                 />
               ))
             )}
-
-            {/* 正在創建回覆時顯示骨架 */}
-            {isCreatingComment && <CommentSkeleton />}
 
             {/* 回覆表單 */}
             {isReplying && (

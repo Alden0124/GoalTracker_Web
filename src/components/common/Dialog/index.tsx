@@ -8,8 +8,8 @@ interface DialogProps {
   children: React.ReactNode;
   title: string;
   className?: string;
-  childrenClassName?: string;
-  footer?: React.ReactNode;
+  childrenClassName?: string | null;
+  footer?: React.ReactNode | null;
 }
 
 const Dialog = ({
@@ -73,7 +73,10 @@ const Dialog = ({
             <IoClose className="text-xl" />
           </button>
         </div>
-        <div className={`p-4 overflow-y-auto flex-1 ${childrenClassName}`}>
+        <div
+          className={`p-4 overflow-y-auto flex-1 custom-scrollbar ${childrenClassName}
+            `}
+        >
           {children}
         </div>
         {footer}

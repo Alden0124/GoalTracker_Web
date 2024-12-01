@@ -182,52 +182,54 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
               </span>
             </div>
           </div>
-          <div className="relative" ref={menuRef}>
-            <button
-              onClick={() => setShowMenu(!showMenu)}
-              className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
-            >
-              <BsThreeDots className="text-xl text-gray-500" />
-            </button>
+          {isCurrentUser && (
+            <div className="relative" ref={menuRef}>
+              <button
+                onClick={() => setShowMenu(!showMenu)}
+                className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
+              >
+                <BsThreeDots className="text-xl text-gray-500" />
+              </button>
 
-            {/* 下拉選單 */}
-            {showMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border dark:border-gray-700 z-10">
-                <div className="py-1">
-                  <button
-                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-foreground-light dark:text-foreground-dark"
-                    onClick={() => handleUpdateStatus(GoalStatus.COMPLETED)}
-                  >
-                    標記為完成
-                  </button>
-                  <button
-                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-foreground-light dark:text-foreground-dark"
-                    onClick={() => handleUpdateStatus(GoalStatus.ABANDONED)}
-                  >
-                    標記為未完成
-                  </button>
-                  <button
-                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-foreground-light dark:text-foreground-dark"
-                    onClick={() => handleUpdateStatus(GoalStatus.IN_PROGRESS)}
-                  >
-                    標記為進行中
-                  </button>
-                  <button
-                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-foreground-light dark:text-foreground-dark"
-                    onClick={() => setShowUpdateDialog(true)}
-                  >
-                    編輯目標
-                  </button>
-                  <button
-                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500"
-                    onClick={handleDeleteGoal}
-                  >
-                    刪除目標
-                  </button>
+              {/* 下拉選單 */}
+              {showMenu && (
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border dark:border-gray-700 z-10">
+                  <div className="py-1">
+                    <button
+                      className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-foreground-light dark:text-foreground-dark"
+                      onClick={() => handleUpdateStatus(GoalStatus.COMPLETED)}
+                    >
+                      標記為完成
+                    </button>
+                    <button
+                      className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-foreground-light dark:text-foreground-dark"
+                      onClick={() => handleUpdateStatus(GoalStatus.ABANDONED)}
+                    >
+                      標記為未完成
+                    </button>
+                    <button
+                      className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-foreground-light dark:text-foreground-dark"
+                      onClick={() => handleUpdateStatus(GoalStatus.IN_PROGRESS)}
+                    >
+                      標記為進行中
+                    </button>
+                    <button
+                      className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-foreground-light dark:text-foreground-dark"
+                      onClick={() => setShowUpdateDialog(true)}
+                    >
+                      編輯目標
+                    </button>
+                    <button
+                      className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-red-500"
+                      onClick={handleDeleteGoal}
+                    >
+                      刪除目標
+                    </button>
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* 在非 Dialog 時只顯示 Tab */}

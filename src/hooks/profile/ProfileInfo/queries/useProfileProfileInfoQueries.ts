@@ -12,7 +12,7 @@ export const useCurrentUser = (options = {}) => {
   const token = GET_COOKIE();
 
   return useQuery({
-    queryKey: queryKeys.users.profile(),
+    queryKey: queryKeys.users.profile(token || ""),
     queryFn: async () => {
       if (!token) {
         throw new Error("No token found");
@@ -35,10 +35,10 @@ export const useCurrentUser = (options = {}) => {
         throw error;
       }
     },
-    enabled: Boolean(token),
-    retry: 0,
-    staleTime: Infinity,
-    gcTime: 1000 * 60 * 5,
+    enabled: !!token, // 只在有 token 時才執行查詢
+    staleTime: 5 * 60 * 1000, // 5分鐘後數據過期
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
     ...options,
   });
 };

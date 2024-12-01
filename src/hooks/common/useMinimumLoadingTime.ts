@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 // 處理最小加載時間
 export const useMinimumLoadingTime = (
   isLoading: boolean,
-  minimumLoadingTime = 1500
+  minimumLoadingTime = 1000
 ) => {
   const loadingStartTime = useRef<number | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout>();

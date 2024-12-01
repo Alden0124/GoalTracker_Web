@@ -1,5 +1,6 @@
 import Wrapper from "@/components/common/Wrapper";
 import GoalFormDialog from "@/components/Profile/ProfileGoals/components/GoalFormDialog";
+import { useMinimumLoadingTime } from "@/hooks/common/useMinimumLoadingTime";
 import {
   useCreateGoal,
   useGetUserGoals,
@@ -9,6 +10,7 @@ import { DEFAULT_GOALS_PARAMS } from "@/services/api/Profile/ProfileGoals/common
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import GoalList from "./components/GoalList";
+import GoalSkeleton from "./skeleton/GoalSkeleton";
 
 interface ProfileGoalsProps {
   isCurrentUser: boolean;
@@ -24,6 +26,9 @@ const ProfileGoals = ({ isCurrentUser }: ProfileGoalsProps) => {
     userId || "",
     DEFAULT_GOALS_PARAMS
   );
+
+  // 使用 useMinimumLoadingTime 來延遲顯示骨架屏
+  const isUserGoalsLoading = useMinimumLoadingTime(isLoading, 1000);
 
   // 新增目標
   const handleSubmit = (data: GoalFormData) => {
@@ -51,7 +56,9 @@ const ProfileGoals = ({ isCurrentUser }: ProfileGoalsProps) => {
 
         {/* 目標列表 */}
         <div className=" space-y-4">
-          {userGoals && userGoals?.goals.length > 0 ? (
+          {isUserGoalsLoading ? (
+            <GoalSkeleton />
+          ) : userGoals && userGoals?.goals.length > 0 ? (
             <GoalList goals={userGoals.goals} isCurrentUser={isCurrentUser} />
           ) : (
             <div className="min-h-[300px] flex flex-col items-center justify-center py-8 text-gray-500 md:min-h-[550px] ">
