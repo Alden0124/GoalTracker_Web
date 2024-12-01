@@ -126,7 +126,7 @@ export const useLikeGoal = () => {
 
     // onError: 當請求失敗時執行
     onError: (err, goalId, context) => {
-      // 如果有之前的資料，則回滾到之前的狀態
+      // 如有之前的資料，則回滾到之前的狀態
       if (context?.previousGoals) {
         queryClient.setQueryData(
           queryKeys.goals.getUserGoals(),
@@ -148,22 +148,35 @@ export const useLikeGoal = () => {
 };
 
 // 創建留言或回覆
-export const useCreateComment = (goalId: string, query: GetCommentsQuery) => {
+export const useCreateComment = (
+  goalId: string,
+  userId: string,
+  query: GetCommentsQuery
+) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateCommentParams) =>
-      FETCH_GOAL.CreateComment(goalId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.goals.getUserGoals(),
-      });
+    mutationFn: (params: CreateCommentParams) =>
+      FETCH_GOAL.CreateComment(goalId, params),
+    onSuccess: (_, variables) => {
+      // 重新獲取主留言列表
       queryClient.invalidateQueries({
         queryKey: queryKeys.goals.getComments(goalId, query),
       });
-    },
-    onError: (error: any) => {
-      handleError(error, "留言或回覆創建失敗");
+      // 重新獲取用戶的目標列表
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.goals.getUserGoals(userId),
+      });
+
+      // 如果是回覆，同時重新獲取該留言的回覆列表
+      if (variables.parentId) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.goals.getReplies(goalId, {
+            ...query,
+            parentId: variables.parentId,
+          }),
+        });
+      }
     },
   });
 };
@@ -185,9 +198,10 @@ export const useGetReplies = (
   options?: { enabled?: boolean }
 ) => {
   return useQuery({
-    queryKey: queryKeys.goals.getComments(goalId, query),
+    queryKey: queryKeys.goals.getReplies(goalId, query),
     queryFn: () => FETCH_GOAL.GetComments(goalId, query),
     enabled: !!goalId && (options?.enabled ?? false), // 默認為 false，除非明確啟用
+    staleTime: 0, // 立即將數據標記為過期
   });
 };
 
@@ -214,18 +228,36 @@ export const useUpdateComment = (goalId: string, query: GetCommentsQuery) => {
 };
 
 // 刪除留言或回覆
-export const useDeleteComment = (goalId: string, query: GetCommentsQuery) => {
+export const useDeleteComment = (
+  goalId: string,
+  userId: string,
+  query: GetCommentsQuery
+) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (commentId: string) => FETCH_GOAL.DeleteComment(commentId),
-    onSuccess: () => {
+    mutationFn: ({ commentId }: { commentId: string; parentId?: string }) =>
+      FETCH_GOAL.DeleteComment(commentId),
+    onSuccess: (_, variables) => {
+      // 重新獲取主留言列表
       queryClient.invalidateQueries({
         queryKey: queryKeys.goals.getComments(goalId, query),
       });
+
+      // 重新獲取用戶的目標列表
       queryClient.invalidateQueries({
-        queryKey: queryKeys.goals.getUserGoals(),
+        queryKey: queryKeys.goals.getUserGoals(userId),
       });
+
+      // 如果是回覆，重新獲取特定父留言的回覆列表
+      if (variables.parentId) {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.goals.getReplies(goalId, {
+            ...query,
+            parentId: variables.parentId,
+          }),
+        });
+      }
     },
     onError: (error: any) => {
       handleError(error, "留言或回覆刪除失敗");

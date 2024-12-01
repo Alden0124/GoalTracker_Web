@@ -82,7 +82,11 @@ export interface Comment {
   };
   goal: string;
   content: string;
-  parentId: string | null;
+  parentId: {
+    content: string;
+    user: string;
+    _id: string;
+  };
   replyCount: number;
   type: "comment" | "progress";
   createdAt: string;

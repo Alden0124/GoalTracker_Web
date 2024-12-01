@@ -39,7 +39,6 @@ const userSlice = createSlice({
       state.accessToken = accessToken;
       state.userInfo = { ...state.userInfo, ...userInfo };
       state.isAuthenticated = true;
-      console.log(state.userInfo);
     },
     // 登出
     signOut: (state) => {

@@ -10,5 +10,11 @@ export const queryKeys = {
       goalId,
       query,
     ],
+    getReplies: (goalId: string, query: GetCommentsQuery) => [
+      "goals",
+      "replies",
+      goalId,
+      query,
+    ],
   },
 } as const;
