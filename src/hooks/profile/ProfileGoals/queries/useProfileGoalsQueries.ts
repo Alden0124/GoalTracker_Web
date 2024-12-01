@@ -8,7 +8,12 @@ import {
 } from "@/services/api/Profile/ProfileGoals/type";
 import { handleError } from "@/utils/errorHandler";
 import { notification } from "@/utils/notification";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { queryKeys } from "./queryKeys";
 
 interface UpdateGoalData extends GoalFormData {
@@ -55,10 +60,19 @@ export const useUpdateGoal = () => {
 
 // 獲取指定用戶的目標列表
 export const useGetUserGoals = (userId: string, params: GetUserGoalsParams) => {
-  return useQuery({
-    // 確保 queryKey 與 invalidateQueries 中使用的相同
+  return useInfiniteQuery({
     queryKey: queryKeys.goals.getUserGoals(userId),
-    queryFn: () => FETCH_GOAL.GetUserGoals(userId, params),
+    queryFn: ({ pageParam = 1 }) =>
+      FETCH_GOAL.GetUserGoals(userId, { ...params, page: pageParam }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) => {
+      // 從 lastPage 中獲取分頁信息
+      const { current, total, size } = lastPage.pagination;
+      const totalPages = Math.ceil(total / size);
+
+      // 如果還有下一頁，返回下一頁的頁碼，否則返回 undefined
+      return current < totalPages ? current + 1 : undefined;
+    },
     enabled: !!userId,
   });
 };

@@ -1,7 +1,7 @@
 // 獲取用戶目標列表參數
 export interface GetUserGoalsParams {
-  page?: number;
-  limit?: number;
+  page: number;
+  limit: number;
   status?: string;
   sort?: string;
 }

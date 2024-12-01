@@ -1,5 +1,6 @@
 import Wrapper from "@/components/common/Wrapper";
 import GoalFormDialog from "@/components/Profile/ProfileGoals/components/GoalFormDialog";
+import { useInfiniteScroll } from "@/hooks/common/useInfiniteScroll";
 import { useMinimumLoadingTime } from "@/hooks/common/useMinimumLoadingTime";
 import {
   useCreateGoal,
@@ -7,7 +8,7 @@ import {
 } from "@/hooks/profile/ProfileGoals/queries/useProfileGoalsQueries";
 import { GoalFormData } from "@/schemas/goalSchema";
 import { DEFAULT_GOALS_PARAMS } from "@/services/api/Profile/ProfileGoals/common";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import GoalList from "./components/GoalList";
 import GoalSkeleton from "./skeleton/GoalSkeleton";
@@ -21,29 +22,46 @@ const ProfileGoals = ({ isCurrentUser }: ProfileGoalsProps) => {
   const { mutate: createGoal, isPending: isCreatePending } = useCreateGoal();
   const { id: userId } = useParams();
 
-  // 獲取用戶的目標列表
-  const { data: userGoals, isLoading } = useGetUserGoals(
-    userId || "",
-    DEFAULT_GOALS_PARAMS
-  );
+  // 使用 infinite query 獲取目標列表
+  const {
+    data: userGoalsPages,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+  } = useGetUserGoals(userId || "", DEFAULT_GOALS_PARAMS);
+
+  // 使用無限捲動 hook
+  useInfiniteScroll({
+    hasNextPage: !!hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+    threshold: 0.5, // 可選：自定義閾值
+    throttleDelay: 500, // 可選：自定義節流延遲
+  });
 
   // 使用 useMinimumLoadingTime 來延遲顯示骨架屏
   const isUserGoalsLoading = useMinimumLoadingTime(isLoading, 1000);
 
-  // 新增目標
+  // 合併所有頁面的目標數據
+  const goals = useMemo(() => {
+    return userGoalsPages?.pages.flatMap((page) => page.goals) ?? [];
+  }, [userGoalsPages]);
+
+  // 處理新增目標
   const handleSubmit = (data: GoalFormData) => {
     createGoal(data);
+    setShowGoalDialog(false);
   };
-
+  console.log(456);
   return (
-    <Wrapper className="md:w-[60%]  dark:bg-transparent !p-0 border-none md:!min-h-[600px]">
+    <Wrapper className="md:w-[60%] dark:bg-transparent !p-0 border-none md:!min-h-[600px]">
       <div className="h-full flex flex-col gap-4">
         {/* 標題區域 */}
         <div className="flex justify-between items-center">
           <h2 className="text-xl text-foreground-light dark:text-foreground-dark font-bold">
             目標列表
           </h2>
-          {/* 新增目標按鈕只在當前用戶的頁面顯示 */}
           {isCurrentUser && (
             <button
               className="btn-primary"
@@ -54,14 +72,29 @@ const ProfileGoals = ({ isCurrentUser }: ProfileGoalsProps) => {
           )}
         </div>
 
-        {/* 目標列表 */}
-        <div className=" space-y-4">
+        {/* 目標列表區域 */}
+        <div className="space-y-4">
           {isUserGoalsLoading ? (
             <GoalSkeleton />
-          ) : userGoals && userGoals?.goals.length > 0 ? (
-            <GoalList goals={userGoals.goals} isCurrentUser={isCurrentUser} />
+          ) : goals.length > 0 ? (
+            <>
+              <GoalList goals={goals} isCurrentUser={isCurrentUser} />
+              {/* 加載更多的提示 */}
+              {isFetchingNextPage && (
+                <div className="py-4">
+                  <GoalSkeleton count={2} />
+                </div>
+              )}
+              {/* 全部加載完成的提示 */}
+              {!hasNextPage && goals.length > 0 && (
+                <div className="text-center py-4 text-gray-500">
+                  已經到底了 ~
+                </div>
+              )}
+            </>
           ) : (
-            <div className="min-h-[300px] flex flex-col items-center justify-center py-8 text-gray-500 md:min-h-[550px] ">
+            // 空狀態
+            <div className="min-h-[300px] flex flex-col items-center justify-center py-8 text-gray-500 md:min-h-[550px]">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-16 w-16 mb-4"
