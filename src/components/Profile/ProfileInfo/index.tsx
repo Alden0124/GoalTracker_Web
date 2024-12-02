@@ -41,7 +41,6 @@ const ProfileInfo = ({ isCurrentUser, userData }: ProfileInfoProps) => {
   } = useGetFollowing(userId || "", dialogType === "following");
   const { avatar, username, occupation, location, education } = userData;
   const token = GET_COOKIE();
-
   const canEdit = isCurrentUser && Boolean(token);
 
   const userInfoItems = [

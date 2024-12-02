@@ -346,22 +346,96 @@ export const useLikeComment = (
       isLiked: boolean;
     }) => FETCH_GOAL.LikeComment(commentId, isLiked),
 
-    onSuccess: () => {
-      // 如果是回覆的點讚，先刷新回覆列表
+    onMutate: async ({ commentId, isLiked }) => {
+      // 取消正在進行的查詢
+      if (comment.parentId?._id) {
+        await queryClient.cancelQueries({
+          queryKey: queryKeys.goals.getReplies(goalId, {
+            ...query,
+            parentId: comment.parentId._id,
+          }),
+        });
+      }
+      await queryClient.cancelQueries({
+        queryKey: queryKeys.goals.getComments(goalId, query),
+      });
+
+      // 獲取之前的數據
+      const previousData = {
+        comments: comment.parentId?._id
+          ? queryClient.getQueryData<GetCommentsResponse>(
+              queryKeys.goals.getReplies(goalId, {
+                ...query,
+                parentId: comment.parentId._id,
+              })
+            )
+          : queryClient.getQueryData<GetCommentsResponse>(
+              queryKeys.goals.getComments(goalId, query)
+            ),
+      };
+
+      // 更新評論的點讚狀態
+      const updateComments = (comments: Comment[]) =>
+        comments.map((c) =>
+          c._id === commentId
+            ? {
+                ...c,
+                isLiked,
+                likeCount: isLiked ? c.likeCount + 1 : c.likeCount - 1,
+              }
+            : c
+        );
+
+      // 樂觀更新
+      if (comment.parentId?._id) {
+        queryClient.setQueryData(
+          queryKeys.goals.getReplies(goalId, {
+            ...query,
+            parentId: comment.parentId._id,
+          }),
+          (old: GetCommentsResponse | undefined) =>
+            old ? { ...old, comments: updateComments(old.comments) } : undefined
+        );
+      }
+
+      queryClient.setQueryData(
+        queryKeys.goals.getComments(goalId, query),
+        (old: GetCommentsResponse | undefined) =>
+          old ? { ...old, comments: updateComments(old.comments) } : undefined
+      );
+
+      return { previousData };
+    },
+
+    onError: (_, __, context) => {
+      // 發生錯誤時回滾到之前的狀態
+      if (comment.parentId?._id) {
+        queryClient.setQueryData(
+          queryKeys.goals.getReplies(goalId, {
+            ...query,
+            parentId: comment.parentId._id,
+          }),
+          context?.previousData.comments
+        );
+      }
+      queryClient.setQueryData(
+        queryKeys.goals.getComments(goalId, query),
+        context?.previousData.comments
+      );
+    },
+
+    onSettled: () => {
+      // 重新獲取最新數據
       if (comment.parentId?._id) {
         queryClient.invalidateQueries({
           queryKey: queryKeys.goals.getReplies(goalId, {
             ...query,
-            parentId: comment.parentId?._id,
+            parentId: comment.parentId._id,
           }),
         });
       }
-
-      // 然后刷新主评论列表
       queryClient.invalidateQueries({
-        queryKey: queryKeys.goals.getComments(goalId, {
-          ...query,
-        }),
+        queryKey: queryKeys.goals.getComments(goalId, query),
       });
     },
   });

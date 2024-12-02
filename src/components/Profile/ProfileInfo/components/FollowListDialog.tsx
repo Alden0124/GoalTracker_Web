@@ -2,7 +2,6 @@ import Dialog from "@/components/common/Dialog";
 import { useUnfollowUser } from "@/hooks/profile/ProfileInfo/queries/useProfileProfileInfoQueries";
 import { FETCH_USER_PROFILE } from "@/services/api/Profile/ProfileInfo";
 import { handleError } from "@/utils/errorHandler";
-import { notification } from "@/utils/notification";
 import { IoPersonOutline } from "react-icons/io5";
 import { useNavigate, useParams } from "react-router-dom";
 import FollowListDialogSkeleton from "../skeleton/FollowListDialogSkeleton";
@@ -37,9 +36,6 @@ const FollowListDialog = ({
     if (title === "粉絲") {
       try {
         await FETCH_USER_PROFILE.UnfollowFollower(id || "", followerId);
-        notification.success({
-          title: "已取消粉絲",
-        });
       } catch (error) {
         handleError(error, "取消粉絲失敗");
       } finally {
@@ -48,7 +44,8 @@ const FollowListDialog = ({
     }
 
     if (title === "追蹤中") {
-      await unfollowUser(followerId);
+      unfollowUser(followerId);
+      onClose();
     }
   };
 
