@@ -1,4 +1,3 @@
-import { Goal } from "@/components/Profile/ProfileInfo/type";
 import { FollowList } from "@/components/Profile/ProfileInfo/type";
 export interface UserProfileResponse {
   followers: FollowList[];
@@ -14,7 +13,6 @@ export interface UserProfileResponse {
     education?: string;
     isEmailVerified: boolean;
     providers?: Array<"google" | "line">;
-    goals?: Goal[];
     isFollowing?: boolean;
     followersCount?: number;
     followingCount?: number;

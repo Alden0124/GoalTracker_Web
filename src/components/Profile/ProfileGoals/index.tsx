@@ -1,13 +1,13 @@
 import Wrapper from "@/components/common/Wrapper";
 import GoalFormDialog from "@/components/Profile/ProfileGoals/components/GoalFormDialog";
 import { useInfiniteScroll } from "@/hooks/common/useInfiniteScroll";
-import { useMinimumLoadingTime } from "@/hooks/common/useMinimumLoadingTime";
 import {
   useCreateGoal,
   useGetUserGoals,
 } from "@/hooks/profile/ProfileGoals/queries/useProfileGoalsQueries";
 import { GoalFormData } from "@/schemas/goalSchema";
 import { DEFAULT_GOALS_PARAMS } from "@/services/api/Profile/ProfileGoals/common";
+import { UserProfileResponse } from "@/services/api/Profile/ProfileInfo/type";
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import GoalList from "./components/GoalList";
@@ -15,12 +15,18 @@ import GoalSkeleton from "./skeleton/GoalSkeleton";
 
 interface ProfileGoalsProps {
   isCurrentUser: boolean;
+  userData: UserProfileResponse["user"];
 }
 
-const ProfileGoals = ({ isCurrentUser }: ProfileGoalsProps) => {
+const ProfileGoals = ({ isCurrentUser, userData }: ProfileGoalsProps) => {
+  const { id: userInfoId } = useParams();
+  // 控制新增目標對話框的顯示
   const [showGoalDialog, setShowGoalDialog] = useState(false);
-  const { mutate: createGoal, isPending: isCreatePending } = useCreateGoal();
-  const { id: userId } = useParams();
+  // 新增目標
+  const { mutate: createGoal, isPending: isCreatePending } = useCreateGoal(
+    userData.id,
+    isCurrentUser
+  );
 
   // 使用 infinite query 獲取目標列表
   const {
@@ -29,19 +35,16 @@ const ProfileGoals = ({ isCurrentUser }: ProfileGoalsProps) => {
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-  } = useGetUserGoals(userId || "", DEFAULT_GOALS_PARAMS);
+  } = useGetUserGoals(userInfoId || "", DEFAULT_GOALS_PARAMS, isCurrentUser);
 
-  // 使用無限捲動 hook
+  // // 使用無限捲動 hook
   useInfiniteScroll({
-    hasNextPage: !!hasNextPage,
-    isFetchingNextPage,
-    fetchNextPage,
+    hasNextPage: !!hasNextPage, // 是否還有下一頁
+    isFetchingNextPage, // 是否正在加載下一頁
+    fetchNextPage, // 加載下一頁
     threshold: 0.5, // 可選：自定義閾值
     throttleDelay: 500, // 可選：自定義節流延遲
   });
-
-  // 使用 useMinimumLoadingTime 來延遲顯示骨架屏
-  const isUserGoalsLoading = useMinimumLoadingTime(isLoading, 1000);
 
   // 合併所有頁面的目標數據
   const goals = useMemo(() => {
@@ -53,7 +56,7 @@ const ProfileGoals = ({ isCurrentUser }: ProfileGoalsProps) => {
     createGoal(data);
     setShowGoalDialog(false);
   };
-  console.log(456);
+
   return (
     <Wrapper className="md:w-[60%] dark:bg-transparent !p-0 border-none md:!min-h-[600px]">
       <div className="h-full flex flex-col gap-4">
@@ -74,7 +77,7 @@ const ProfileGoals = ({ isCurrentUser }: ProfileGoalsProps) => {
 
         {/* 目標列表區域 */}
         <div className="space-y-4">
-          {isUserGoalsLoading ? (
+          {isLoading ? (
             <GoalSkeleton />
           ) : goals.length > 0 ? (
             <>
@@ -82,7 +85,7 @@ const ProfileGoals = ({ isCurrentUser }: ProfileGoalsProps) => {
               {/* 加載更多的提示 */}
               {isFetchingNextPage && (
                 <div className="py-4">
-                  <GoalSkeleton count={2} />
+                  <GoalSkeleton />
                 </div>
               )}
               {/* 全部加載完成的提示 */}

@@ -91,5 +91,7 @@ export interface Comment {
   type: "comment" | "progress";
   createdAt: string;
   updatedAt: string;
+  isLiked: boolean;
+  likeCount: number;
   __v: number;
 }

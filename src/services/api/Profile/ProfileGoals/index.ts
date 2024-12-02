@@ -35,6 +35,10 @@ export const FETCH_GOAL = {
   LikeGoal: (goalId: string, isLiked: boolean) =>
     axiosInstance.post(`/goals/likeGoal/${goalId}`, { isLiked }),
 
+  // 點讚留言或回覆
+  LikeComment: (commentId: string, isLiked: boolean) =>
+    axiosInstance.post(`/goals/likeComment/${commentId}`, { isLiked }),
+
   // 刪除目標
   DeleteGoal: (goalId: string) =>
     axiosInstance.delete(`/goals/deleteGoal/${goalId}`),

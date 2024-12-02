@@ -14,7 +14,7 @@ export const useProfileData = () => {
   const token = GET_COOKIE();
 
   // 判斷是否為當前用戶的個人頁面
-  const isCurrentUser = !urlUserId || urlUserId === currentUserProfile?.id;
+  const isCurrentUser = urlUserId === currentUserProfile.id;
 
   // 獲取當前用戶數據
   const currentUserQuery = useCurrentUser({

@@ -33,8 +33,11 @@ const GoalDetailsDialog = ({
   const userInfo = useAppSelector(selectUserProFile);
 
   // 新增留言或回覆 API hooks
-  const { mutate: createComment, isPending: isCreatingComment } =
-    useCreateComment(goalId || "", userInfo.id, userInfo.avatar || "", {
+  const { mutate: createComment } = useCreateComment(
+    goalId,
+    userInfo,
+    isCurrentUser,
+    {
       ...DEFAULT_COMMENTS_PARAMS,
       type: activeTab,
     });
@@ -108,10 +111,10 @@ const GoalDetailsDialog = ({
       }
       className="!z-0 overflow-hidden"
     >
-      <div className="space-y-4 flex flex-col h-[80vh]">
+      <div className={`space-y-4 flex flex-col h-[60vh]`}>
         {/* 留言列表 */}
         <div className="flex-1 ">
-          <div className="space-y-3 h-full">
+          <div className="space-y-3 h-full ">
             {isCommentsDataMinimumLoadingTime ? (
               <>
                 <CommentSkeleton />
@@ -121,7 +124,7 @@ const GoalDetailsDialog = ({
             ) : (
               <>
                 {commentsData?.comments.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center py-8 text-gray-500">
+                  <div className=" flex flex-col items-center justify-center h-full text-gray-500">
                     <svg
                       className="w-16 h-16 mb-4"
                       fill="none"

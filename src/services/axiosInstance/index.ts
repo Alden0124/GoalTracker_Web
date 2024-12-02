@@ -1,7 +1,7 @@
 import { store } from "@/stores";
 import { finishLoading, startLoading } from "@/stores/slice/loadingReducer";
 import { signOut } from "@/stores/slice/userReducer";
-import { GET_COOKIE, SET_COOKIE } from "@/utils/cookies";
+import { EXISTS_COOKIE, GET_COOKIE, SET_COOKIE } from "@/utils/cookies";
 import axios, { AxiosHeaders, InternalAxiosRequestConfig } from "axios";
 import { FETCH_AUTH } from "../api/auth";
 import { ApiError } from "./type";
@@ -101,14 +101,25 @@ instance.interceptors.response.use(
 
       switch (error.response.status) {
         case 401:
+          // 檢查是否存在 refreshToken，如果不存在直接登出
+          if (!EXISTS_COOKIE("refreshToken")) {
+            store.dispatch(signOut());
+            window.location.href = "/auth/signIn";
+            break;
+          }
+
           try {
             const resp = await FETCH_AUTH.RefreshToken();
             SET_COOKIE(resp.accessToken);
+            // 重試原始請求
+            const originalRequest = error.config;
+            originalRequest.headers.Authorization = `Bearer ${resp.accessToken}`;
+            return instance(originalRequest);
           } catch (error) {
+            console.log("catch");
             store.dispatch(signOut());
             window.location.href = "/auth/signIn";
           }
-          // 可以添加重定向邏輯
           break;
         // ... 其他錯誤處理 ...
       }

@@ -1,3 +1,4 @@
+import { useAppSelector } from "@/hooks/common/useAppReduxs";
 import {
   useDeleteGoal,
   useLikeGoal,
@@ -8,11 +9,11 @@ import {
   GoalStatus,
   Goal as GoalType,
 } from "@/services/api/Profile/ProfileGoals/type";
+import { selectUserProFile } from "@/stores/slice/userReducer";
 import { formatDate } from "@/utils/dateFormat";
 import { debounce } from "@/utils/debounce";
 import { notification } from "@/utils/notification";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AiOutlineHeart } from "react-icons/ai";
 import {
   BsCalendarCheck,
   BsCalendarPlus,
@@ -22,6 +23,7 @@ import {
   BsXCircle,
 } from "react-icons/bs";
 import { FaRegComment } from "react-icons/fa";
+import { FiHeart } from "react-icons/fi";
 import GoalDetailsDialog from "./GoalDetailsDialog";
 import GoalFormDialog from "./GoalFormDialog";
 
@@ -56,6 +58,9 @@ const getStatusConfig = (status: GoalStatus) => {
 
 // 使用 memo 包裝組件
 const Goal = ({ goal, isCurrentUser }: GoalProps) => {
+  // 使用者資料
+  const userInfo = useAppSelector(selectUserProFile);
+  // 目前選擇的Tab
   const [activeTab, setActiveTab] = useState<"progress" | "comment">(
     "progress"
   );
@@ -71,11 +76,14 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
   // 此使用者是否已對此目標點讚
   const [isLiked, setIsLiked] = useState(goal.isLiked);
   // 刪除目標query
-  const { mutate: deleteGoal } = useDeleteGoal();
+  const { mutate: deleteGoal } = useDeleteGoal(userInfo, isCurrentUser);
   // 更新目標query
-  const { mutate: updateGoal, isPending: isUpdatePending } = useUpdateGoal();
+  const { mutate: updateGoal, isPending: isUpdatePending } = useUpdateGoal(
+    userInfo,
+    isCurrentUser
+  );
   // 點讚目標query
-  const { mutate: likeGoal } = useLikeGoal();
+  const { mutate: likeGoal } = useLikeGoal(userInfo, isCurrentUser);
   // 狀態配置
   const statusConfig = getStatusConfig(goal.status);
 
@@ -93,7 +101,7 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showMenu, setShowMenu]);
+  }, [showMenu]);
 
   // 刪除目標
   const handleDeleteGoal = async () => {
@@ -133,7 +141,7 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
       debounce((goalId: string, isLiked: boolean) => {
         likeGoal({ goalId, isLiked });
       }, 3000),
-    []
+    [likeGoal]
   );
 
   // 點讚目標
@@ -263,14 +271,14 @@ const Goal = ({ goal, isCurrentUser }: GoalProps) => {
           <div className="flex gap-6">
             <button
               onClick={() => handleLikeGoal(goal._id)}
-              className={`flex items-center gap-1 ${
-                isLiked
-                  ? "text-red-500 hover:text-red-700"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
+              className="flex items-center gap-1 text-sm text-gray-500 hover:text-red-500"
             >
-              <AiOutlineHeart
-                className={`text-lg ${isLiked ? "fill-current" : ""}`}
+              <FiHeart
+                className={`text-lg ${
+                  isLiked
+                    ? "fill-red-500 text-red-500"
+                    : "fill-none hover:text-red-500"
+                }`}
               />
               <span>{localLikeCount}</span>
             </button>

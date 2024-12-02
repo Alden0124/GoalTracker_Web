@@ -1,9 +1,9 @@
 import { useAppSelector } from "@/hooks/common/useAppReduxs";
-import { useMinimumLoadingTime } from "@/hooks/common/useMinimumLoadingTime";
 import {
   useCreateComment,
   useDeleteComment,
   useGetReplies,
+  useLikeComment,
   useUpdateComment,
 } from "@/hooks/profile/ProfileGoals/queries/useProfileGoalsQueries";
 import { CommentFormData, commentSchema } from "@/schemas/commentSchema";
@@ -14,11 +14,12 @@ import {
 } from "@/services/api/Profile/ProfileGoals/type";
 import { selectUserProFile } from "@/stores/slice/userReducer";
 import { formatDate, formatTime } from "@/utils/dateFormat";
+import { debounce } from "@/utils/debounce";
 import { notification } from "@/utils/notification";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { FiEdit2, FiMoreVertical, FiTrash2 } from "react-icons/fi";
+import { FiEdit2, FiHeart, FiMoreVertical, FiTrash2 } from "react-icons/fi";
 import { IoSend } from "react-icons/io5";
 import CommentAvater from "../../ProfileInfo/components/CommentAvater";
 import CommentSkeleton from "../skeleton/CommentSkeleton";
@@ -56,11 +57,15 @@ const CommentItem = ({
   const userInfo = useAppSelector(selectUserProFile);
 
   // 新增留言或回覆 API hooks
-  const { mutate: createComment, isPending: isCreatingComment } =
-    useCreateComment(goalId || "", userInfo.id, userInfo.avatar || "", {
+  const { mutate: createComment } = useCreateComment(
+    goalId,
+    userInfo,
+    isCurrentUser,
+    {
       ...DEFAULT_COMMENTS_PARAMS,
       type: activeTab,
-    });
+    }
+  );
 
   // 獲取回覆列表 API hooks
   const { data: repliesData, isLoading: isRepliesLoading } = useGetReplies(
@@ -83,14 +88,53 @@ const CommentItem = ({
   });
 
   // 刪除留言或回覆 API hooks
-  const { mutate: deleteComment } = useDeleteComment(goalId, userInfo.id, {
-    ...DEFAULT_COMMENTS_PARAMS,
-    type: activeTab,
-  });
+  const { mutate: deleteComment } = useDeleteComment(
+    goalId,
+    userInfo.id,
+    isCurrentUser,
+    {
+      ...DEFAULT_COMMENTS_PARAMS,
+      type: activeTab,
+    }
+  );
 
-  // 使用 useMinimumLoadingTime 來延遲顯示骨架屏
-  const isRepliesDataMinimumLoadingTime =
-    useMinimumLoadingTime(isRepliesLoading);
+  // 添加點讚評論的 mutation
+  const { mutate: likeComment } = useLikeComment(
+    goalId,
+    {
+      ...DEFAULT_COMMENTS_PARAMS,
+      type: activeTab,
+    },
+    comment
+  );
+
+  // 添加本地狀態
+  const [localLikeCount, setLocalLikeCount] = useState(comment.likeCount);
+  const [isLiked, setIsLiked] = useState(comment.isLiked);
+
+  // 使用 useMemo 確保 debounce 函數只創建一次
+  const debouncedLike = useMemo(
+    () =>
+      debounce((commentId: string, isLiked: boolean) => {
+        likeComment({
+          commentId,
+          isLiked,
+        });
+      }, 1000),
+    [likeComment]
+  );
+
+  // 處理點讚
+  const handleLike = () => {
+    const newIsLiked = !isLiked;
+
+    // 立即更新本地狀態
+    setIsLiked(newIsLiked);
+    setLocalLikeCount((prev) => (newIsLiked ? prev + 1 : prev - 1));
+
+    // 延遲發送請求
+    debouncedLike(comment._id, newIsLiked);
+  };
 
   // 自動調整文字框高度
   useEffect(() => {
@@ -221,7 +265,7 @@ const CommentItem = ({
 
                   {/* 顯示留言時間 */}
                   {!comment.parentId ? (
-                    <div className="flex gap-2">
+                    <div className="flex gap-4 items-center">
                       <p className="text-sm text-gray-500 break-keep">
                         {formatDate(comment.createdAt)}{" "}
                         {formatTime(comment.createdAt)}
@@ -235,12 +279,44 @@ const CommentItem = ({
                           ? `${comment.replyCount} 則回覆`
                           : "回覆"}
                       </button>
+                      {/* 添加愛心按鈕 */}
+                      <button
+                        type="button"
+                        onClick={handleLike}
+                        className="flex items-center gap-1 text-sm text-gray-500 hover:text-red-500"
+                      >
+                        <FiHeart
+                          className={`text-lg ${
+                            isLiked
+                              ? "fill-red-500 text-red-500"
+                              : "fill-none hover:text-red-500"
+                          }`}
+                        />
+                        <span>{localLikeCount}</span>
+                      </button>
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-500 break-keep">
-                      {formatDate(comment.createdAt)}{" "}
-                      {formatTime(comment.createdAt)}
-                    </p>
+                    <div className="flex gap-4 items-center">
+                      <p className="text-sm text-gray-500 break-keep">
+                        {formatDate(comment.createdAt)}{" "}
+                        {formatTime(comment.createdAt)}
+                      </p>
+                      {/* 添加愛心按鈕 */}
+                      <button
+                        type="button"
+                        onClick={handleLike}
+                        className="flex items-center gap-1 text-sm text-gray-500 hover:text-red-500"
+                      >
+                        <FiHeart
+                          className={`text-lg ${
+                            isLiked
+                              ? "fill-red-500 text-red-500"
+                              : "fill-none hover:text-red-500"
+                          }`}
+                        />
+                        <span>{localLikeCount}</span>
+                      </button>
+                    </div>
                   )}
                 </div>
 
@@ -284,7 +360,7 @@ const CommentItem = ({
         {showReplies && (
           <div className="mt-2 ml-12">
             {/* 回覆列表 */}
-            {isRepliesDataMinimumLoadingTime ? (
+            {isRepliesLoading ? (
               <CommentSkeleton />
             ) : (
               repliesData?.comments.map((reply) => (

@@ -30,7 +30,7 @@ const Profile = () => {
         {data?.user && (
           <>
             <ProfileInfo isCurrentUser={isCurrentUser} userData={data.user} />
-            <ProfileGoals isCurrentUser={isCurrentUser} />
+            <ProfileGoals isCurrentUser={isCurrentUser} userData={data.user} />
           </>
         )}
       </div>

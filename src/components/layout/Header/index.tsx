@@ -17,7 +17,6 @@ const Header = () => {
   const isLogin = useAppSelector(selectIsAuthenticated);
   const { t, i18n } = useTranslation();
   const { theme, setTheme } = useTheme();
- 
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -43,7 +42,9 @@ const Header = () => {
         z-10
       `}
     >
-      <Link to={'/'} className="text-[18px]">GoalTracker</Link>
+      <Link to={"/"} className="text-[18px]">
+        GoalTracker
+      </Link>
       <div className="flex items-center text-[16px] gap-[10px]">
         <button
           onClick={toggleLanguage}

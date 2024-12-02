@@ -1,5 +1,6 @@
+import ProfileSkeleton from "@/components/Profile/ProfileInfo/skeleton/ProfileSkeleton";
+import { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { Suspense, lazy } from "react";
 
 // 延遲載入組件
 const ProtectedRoute = lazy(() => import("@/router/ProtectedRoute"));
@@ -53,7 +54,7 @@ const routes = [
           {
             path: "/profile/:id",
             element: (
-              <Suspense fallback={<div className="h-screen"></div>}>
+              <Suspense fallback={<ProfileSkeleton />}>
                 <Profile />
               </Suspense>
             ),

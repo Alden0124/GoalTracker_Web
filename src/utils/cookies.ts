@@ -1,6 +1,6 @@
 import Cookies from "js-cookie";
 
-type SameSiteType = 'strict' | 'lax' | 'none' | undefined;
+type SameSiteType = "strict" | "lax" | "none" | undefined;
 
 interface CookieOptions {
   expires?: number | Date;
@@ -15,17 +15,19 @@ const isProd = window.location.hostname !== "localhost";
 const DEFAULT_OPTIONS: CookieOptions = {
   path: "/",
   secure: true,
-  sameSite: 'lax' as SameSiteType,
+  sameSite: "lax" as SameSiteType,
   expires: 7,
 };
 export function SET_COOKIE(value: string) {
   try {
     const options: CookieOptions = {
       ...DEFAULT_OPTIONS,
-      ...(isProd ? {
-        secure: true,
-        sameSite: 'none' as SameSiteType
-      } : {})
+      ...(isProd
+        ? {
+            secure: true,
+            sameSite: "none" as SameSiteType,
+          }
+        : {}),
     };
 
     REMOVE_COOKIE();
@@ -34,25 +36,19 @@ export function SET_COOKIE(value: string) {
 
     // 驗證是否設置成功
     const savedCookie = Cookies.get("GT_ACCESS_TOKEN");
-    if (!savedCookie) {
-      console.warn("Cookie 設置失敗，使用 localStorage 作為備用");
-      localStorage.setItem("GT_ACCESS_TOKEN", value);
-    } else {
-      console.log("Cookie 設置成功:", savedCookie);
-    }
+    if (savedCookie) console.log("Cookie 設置成功:", savedCookie);
   } catch (error) {
     console.error("設置 Cookie 時發生錯誤:", error);
-    localStorage.setItem("GT_ACCESS_TOKEN", value);
   }
 }
 
 export function GET_COOKIE(key: string = "GT_ACCESS_TOKEN") {
-  return Cookies.get(key) || localStorage.getItem(key);
+  return Cookies.get(key);
 }
 
 export function REMOVE_COOKIE(key: string = "GT_ACCESS_TOKEN") {
   Cookies.remove(key, DEFAULT_OPTIONS);
-  localStorage.removeItem(key);
+  Cookies.remove("refreshToken", DEFAULT_OPTIONS);
 }
 
 export function EXISTS_COOKIE(key: string = "GT_ACCESS_TOKEN") {
