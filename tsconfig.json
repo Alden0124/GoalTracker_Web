@@ -9,7 +9,6 @@
     "paths": {
       "@/*": ["src/*"]
     },
-    "types": ["node", "@types/node", "vite/client"],
 
     /* Bundler mode */
     "moduleResolution": "bundler",
