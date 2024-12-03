@@ -27,12 +27,5 @@
     "composite": true
   },
   "include": ["src", ".env-config.ts", "vite-env.d.ts"],
-  "references": [{ "path": "./tsconfig.node.json" }],
-  "ts-node": {
-    "compilerOptions": {
-      "module": "CommonJS",
-      "composite": true,
-      "noEmit": false
-    }
-  }
+  "references": [{ "path": "./tsconfig.node.json" }]
 }
