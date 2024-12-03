@@ -12,6 +12,12 @@
     "moduleDetection": "force",
     "noEmit": true,
 
+    /* 添加基礎路徑和路徑別名配置 */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
