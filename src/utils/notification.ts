@@ -7,11 +7,16 @@ interface NotificationOptions {
   text?: string;
   timer?: number;
   showConfirmButton?: boolean;
+  target?: string;
 }
 
 export const notification = {
   // 基礎提示
   base: (type: NotificationType, options: NotificationOptions) => {
+    const targetElement = document.querySelector("#portal-dialog > div")
+      ? "#portal-dialog > div"
+      : "body";
+
     return Swal.fire({
       icon: type,
       title: options.title,
@@ -21,6 +26,7 @@ export const notification = {
       showConfirmButton: options.showConfirmButton ?? true,
       confirmButtonText: "確定",
       confirmButtonColor: "#3085d6",
+      target: targetElement,
     });
   },
 
@@ -51,6 +57,10 @@ export const notification = {
 
   // 確認對話框
   confirm: (options: NotificationOptions) => {
+    const targetElement = document.querySelector("#portal-dialog > div")
+      ? "#portal-dialog > div"
+      : "body";
+
     return Swal.fire({
       title: options.title || "確認操作",
       text: options.text,
@@ -60,6 +70,10 @@ export const notification = {
       cancelButtonColor: "#d33",
       confirmButtonText: "確定",
       cancelButtonText: "取消",
+      target: targetElement,
+      customClass: {
+        container: "swal2-container-custom", // 添加自定義類名
+      },
     });
   },
-}; 
+};

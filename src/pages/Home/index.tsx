@@ -21,7 +21,7 @@ const Home = () => {
 
       {/* 第二部分 */}
       <section
-        className={`text-center px-[15px] dark:bg-background-dark h-[700px] pt-[200px]`}
+        className={`text-center px-[15px] h-[700px] pt-[200px]`}
       >
         <h1 className={`text-[50px]  dark:text-foreground-dark`}>
           設定期望目標

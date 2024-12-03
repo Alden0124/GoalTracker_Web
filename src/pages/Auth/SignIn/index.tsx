@@ -5,8 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { signInSchema, type SignInFormDataType } from "@/schemas/authSchema";
 // 組件
 import Input from "@/components/ui/Input";
-import GoogleLoginButton from "@/components/Auth/OAuth/GoogleLoginButton";
-import LineLoginButton from "@/components/Auth/OAuth/LineLoginButton";
+import GoogleLoginButton from "@/components/auth/OAuth/GoogleLoginButton";
+import LineLoginButton from "@/components/auth/OAuth/LineLoginButton";
 // icon
 // import { FcGoogle } from "react-icons/fc";
 // api
@@ -16,15 +16,15 @@ import { useSignInHandler } from "@/hooks/auth/useSignIn";
 // google登入
 import { GoogleOAuthProvider } from "@react-oauth/google";
 // redux
-import { useAppSelector } from "@/hooks/common/useAppReduxs";
-import { selectUser } from "@/stores/slice/userReducer";
+// import { useAppSelector } from "@/hooks/common/useAppReduxs";
+// import { selectUserProFile } from "@/stores/slice/userReducer";
 import { useEffect, useRef } from "react";
 
 const SignIn = () => {
   const [searchParam] = useSearchParams();
   const { handelSignInSucess, handleSignInError } = useSignInHandler();
-  const user = useAppSelector(selectUser);
-  console.log(user);
+  // const user = useAppSelector(selectUserProFile);
+  // console.log(user);
 
   const code = searchParam.get("code");
   const isLineLoginProcessed = useRef(false);
