@@ -10,7 +10,7 @@ interface CookieOptions {
   sameSite?: SameSiteType;
 }
 
-const isProd = window.location.hostname !== "localhost";
+const isProd = import.meta.env.PROD;
 
 const DEFAULT_OPTIONS: CookieOptions = {
   path: "/",

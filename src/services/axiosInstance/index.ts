@@ -6,7 +6,7 @@ import axios, { AxiosHeaders, InternalAxiosRequestConfig } from "axios";
 import { FETCH_AUTH } from "../api/auth";
 import { ApiError } from "./type";
 
-const isProd = window.location.hostname !== "localhost";
+const isProd = import.meta.env.PROD;
 
 // 根據環境設置 baseURL
 const baseURL = isProd
